@@ -4,7 +4,12 @@ FROM jupyter/scipy-notebook:${UPSTREAM_SCIPY_NOTEBOOK_VER}
 USER root
 
 ADD scripts/clean-layer.sh /usr/local/bin/
-RUN echo "python ==3.8.3"                    >> /opt/conda/conda-meta/pinned && \
+RUN \
+    # The upstream image jupyter/scipy-notebook pins a specific python
+    # version. Uncomment the lines below if you want to install a different
+    # version than the one in the upstream image.
+    # sed -i '/python.*/d'                        /opt/conda/conda-meta/pinned && \
+    # echo "python ==3.8.3"                    >> /opt/conda/conda-meta/pinned && \
     echo "numpy 1.18.*"                      >> /opt/conda/conda-meta/pinned && \
     echo "scipy 1.4.*"                       >> /opt/conda/conda-meta/pinned && \
     clean-layer.sh
