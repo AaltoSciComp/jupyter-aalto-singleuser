@@ -27,6 +27,7 @@ RUN apt-get update && \
         man-db \
         psmisc \
         vim \
+        build-essential \
         && \
     clean-layer.sh
 
