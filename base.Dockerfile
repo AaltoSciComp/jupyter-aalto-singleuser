@@ -39,7 +39,7 @@ RUN apt-get update && \
 # pin the JupyterHub version
 # https://github.com/jupyterhub/jupyterhub/tree/master/singleuser
 # TODO: should this be removed and the upstream version used instead?
-RUN mamba install jupyterhub==1.1.0 && \
+RUN mamba install -y jupyterhub==1.1.0 && \
     clean-layer.sh
 
 
@@ -49,7 +49,7 @@ RUN \
     #conda config --prepend channels conda-forge && \
     # TODO: is this set already?
     conda config --system --set channel_priority strict && \
-    mamba install \
+    mamba install -y \
         bash_kernel \
         conda-tree \
         importnb \
@@ -70,7 +70,7 @@ RUN \
 
 RUN \
     #mamba install jupyterlab==2.* && \
-    mamba install \
+    mamba install -y \
         jupyterlab-git \
         nbdime \
         nbgitpuller \
@@ -111,7 +111,7 @@ RUN pip install --no-cache-dir git+https://github.com/AaltoSciComp/nbgrader@live
     # old PR/discussion: https://github.com/jupyter/nbgrader/pull/1405
     # current PR: https://github.com/jupyter/nbgrader/pull/1421
     # this remains a major problem.
-    mamba install 'nbconvert<6' && \
+    mamba install -y 'nbconvert<6' && \
     jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     jupyter nbextension enable --sys-prefix --py nbgrader && \
     jupyter serverextension enable --sys-prefix --py nbgrader && \
