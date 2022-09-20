@@ -358,6 +358,16 @@ RUN \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
 
+# bayesda2022, RT#21998
+RUN \
+    echo 'remotes::install_github(' \
+            '"avehtari/BDA_course_Aalto", ' \
+            'subdir = "rpackage", ' \
+            'upgrade="never")' | CC=gcc CXX=g++ Rscript - && \
+    Rscript -e "library('aaltobda')" && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
 # ====================================
 
 # TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
