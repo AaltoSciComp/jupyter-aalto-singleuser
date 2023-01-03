@@ -18,4 +18,4 @@ rm -rf /var/lib/apt/lists/*
 
 fix-permissions /opt/conda /opt/software /home/$NB_USER
 
-} 2>&1 > /dev/null
+} 2>&1 | sed -e 's/^/clean-layer:    /'
