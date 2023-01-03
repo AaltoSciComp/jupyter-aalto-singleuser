@@ -64,8 +64,7 @@ RUN \
         nbval \
         pipdeptree \
         pytest \
-        # Requires nbgrader>6
-        # voila \
+        voila \
         && \
     jupyter contrib nbextension install --sys-prefix && \
     python -m bash_kernel.install --sys-prefix && \
