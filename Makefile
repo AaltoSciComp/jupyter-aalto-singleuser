@@ -13,11 +13,14 @@ VER_R=5.0.25
 # OpenCV
 VER_CV=1.8.0
 
-PACK_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda/packs
+# Software for the standard image
+BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda-dev
 ENVIRONMENT_NAME=jupyter-generic
-ENVIRONMENT_VERSION=2022-03-07
-ENVIRONMENT_HASH=560c880a
-CONDA_FILE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH).tar.gz
+ENVIRONMENT_VERSION=2023-07-10-dev2
+# Builder commit 641e7d4705c54fbfc04f10ca112f11525b7692c8
+ENVIRONMENT_HASH=8261e533
+
+ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSION)/$(ENVIRONMENT_HASH)/environment.yml
 
 # VER2_R=$(VER_R)-$(GIT_REV)
 TEST_MEM_LIMIT="--memory=2G"
@@ -37,31 +40,17 @@ default:
 full-rebuild: base standard test-standard
 
 
-base: no-pack pre-build
+base: pre-build
 	@! grep -P '\t' -C 1 base.Dockerfile || { echo "ERROR: Tabs in base.Dockerfile" ; exit 1 ; }
 	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) . -f base.Dockerfile --build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER)
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) conda env export -n base > environment-yml/$@-$(VER_BASE).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) conda list --revisions > conda-history/$@-$(VER_BASE).yml
-standard: | include-pack build-standard no-pack
-build-standard: pre-build
+standard: pre-build update-environment
 	@! grep -P '\t' -C 1 standard.Dockerfile || { echo "ERROR: Tabs in standard.Dockerfile" ; exit 1 ; }
-	mkdir -p conda
-# NOTE: This is a temporary workaround. It would be more efficient to create
-#       the archives directly with the correct permissions
-	if ! [ -e "conda/${CONDA_FILE}" ]; then \
-		rm -rf conda/unpack && \
-		mkdir -p conda/unpack && \
-		tar xf $(PACK_PATH)/${CONDA_FILE} -C conda/unpack && \
-		chmod -R g+rwX conda/unpack && \
-		find conda/unpack -type d -exec chmod +6000 {} \; && \
-		tar -czf conda/${CONDA_FILE} --owner=1000 --group=100 -C conda/unpack . ; \
-	fi
 	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) . \
 		-f standard.Dockerfile \
 		--build-arg=VER_BASE=$(VER_BASE) \
-		--build-arg=ENVIRONMENT_NAME=$(ENVIRONMENT_NAME) \
-		--build-arg=ENVIRONMENT_VERSION=$(ENVIRONMENT_VERSION) \
-		--build-arg=ENVIRONMENT_HASH=$(ENVIRONMENT_HASH) \
+		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
 		--build-arg=VER_STD=$(VER_STD)
 	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
 	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
@@ -82,6 +71,9 @@ opencv: pre-build
 	DOCKER_BUILDKIT=1 docker build -t notebook-server-opencv:$(VER_CV) --pull=false . -f opencv.Dockerfile --build-arg=VER_STD=$(VER_STD)
 	docker run --rm notebook-server-opencv:$(VER_CV) conda env export -n base > environment-yml/$@-$(VER_CV).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_CV) conda list --revisions > conda-history/$@-$(VER_CV).yml
+
+update-environment:
+	cp $(ENVIRONMENT_FILE) environment.yml
 
 
 pre-test:
@@ -165,17 +157,6 @@ check-hubrepo:
 ifndef HUBREPO
 	$(error HUBREPO is undefined. Format: HUBREPO=dockerhub_repo_name)
 endif
-
-no-pack:
-	$(no-pack)
-
-define no-pack =
-	sed -i '\,^!conda/.*\.tar.gz,d' .dockerignore
-endef
-
-include-pack:
-	$(no-pack)
-	echo '!conda/${CONDA_FILE}' >> .dockerignore
 
 pre-build:
 	mkdir -p conda-history environment-yml
