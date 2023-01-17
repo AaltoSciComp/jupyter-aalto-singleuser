@@ -83,6 +83,19 @@ RUN \
         && \
     clean-layer.sh
 
+# deeplearn2023, RT#22643
+RUN \
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        && \
+    pip install --no-cache-dir \
+        einops \
+        'certifi>2021.10.8' \
+        && \
+    clean-layer.sh
+
+ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
