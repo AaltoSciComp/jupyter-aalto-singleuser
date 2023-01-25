@@ -98,6 +98,15 @@ ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 # ========================================
 
+# Update nbgrader
+RUN \
+    /opt/conda/bin/pip uninstall nbgrader -y && \
+    /opt/conda/bin/pip install --no-cache-dir \
+        git+https://github.com/AaltoSciComp/nbgrader@dev-2023-0.7.1#egg=nbgrader==0.7.1.dev700 && \
+    /opt/conda/bin/jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
+    clean-layer.sh
+
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY hooks/ scripts/ /usr/local/bin/
