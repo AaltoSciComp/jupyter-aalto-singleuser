@@ -5,7 +5,7 @@ CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
 # base image - jupyter stuff only, not much software
 VER_BASE=5.0
 # Python
-VER_STD=5.0.18
+VER_STD=5.0.19
 # Julia
 VER_JULIA=5.0.16
 # R
@@ -63,8 +63,8 @@ build-standard: pre-build
 		--build-arg=ENVIRONMENT_VERSION=$(ENVIRONMENT_VERSION) \
 		--build-arg=ENVIRONMENT_HASH=$(ENVIRONMENT_HASH) \
 		--build-arg=VER_STD=$(VER_STD)
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
+	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
+	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
 #r:
 #	docker build -t ${REGISTRY}${GROUP}/notebook-server-r:0.4.0 --pull=false . -f r.Dockerfile
 r-ubuntu: pre-build
