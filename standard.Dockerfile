@@ -109,6 +109,14 @@ RUN \
     /opt/conda/bin/jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     clean-layer.sh
 
+# css2023, RT#23019
+RUN \
+    /opt/software/bin/mamba install -y --freeze-installed \
+        transformers \
+        && \
+    clean-layer.sh
+
+# ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
