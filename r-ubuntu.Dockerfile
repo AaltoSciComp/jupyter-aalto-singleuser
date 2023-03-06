@@ -317,10 +317,14 @@ RUN \
 
 # TODO: remove when base has a new enough nbgrader
 RUN \
-    pip uninstall nbgrader -y && \
-    pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@live-2022#egg=nbgrader==0.7.0-dev3+aalto && \
-    jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
+    # TODO: remove this limitation when the base image contains a recent enough
+    # nodejs, or when we're installing a built version of nbgrader instead of
+    # cloning and building locally
+    /opt/conda/bin/mamba install 'nodejs>=16,<18' && \
+    /opt/conda/bin/pip uninstall nbgrader -y && \
+    /opt/conda/bin/pip install --no-cache-dir \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.2.dev500 && \
+    /opt/conda/bin/jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     clean-layer.sh
 
 # ====================================
