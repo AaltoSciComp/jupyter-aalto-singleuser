@@ -147,6 +147,8 @@ RUN \
         HMM \
         phangorn \
         testit \
+        # bayesda2022 RT#22450
+        latex2exp \
         # unknown purpose, was included in the original Dockerfile
         nloptr \
           && \
@@ -340,14 +342,6 @@ RUN \
 #           && \
 #     fix-permissions /usr/local/lib/R/site-library && \
 #     clean-layer.sh
-
-# bayesda2022, RT#22450
-RUN \
-    install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} \
-        latex2exp \
-          && \
-    fix-permissions /usr/local/lib/R/site-library && \
-    clean-layer.sh
 
 # ====================================
 
