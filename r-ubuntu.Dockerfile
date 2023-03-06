@@ -149,6 +149,9 @@ RUN \
         testit \
         # bayesda2022 RT#22450
         latex2exp \
+        # smoti2023 RT#23112
+        deSolve \
+        FME \
         # unknown purpose, was included in the original Dockerfile
         nloptr \
           && \
