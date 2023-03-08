@@ -116,6 +116,14 @@ RUN \
         && \
     clean-layer.sh
 
+# hona2023-brain, RT#22805
+RUN \
+    /opt/software/bin/mamba install -y --freeze-installed -c conda-forge\
+        nilearn \
+        nibabel \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
