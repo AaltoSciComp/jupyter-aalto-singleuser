@@ -131,6 +131,15 @@ RUN \
         && \
     clean-layer.sh
 
+# gausproc2023, RT#23193
+# This creates a 4GB layer because a lot of packages are updated, but
+# couldn't figure out a more efficient way
+RUN \
+    /opt/software/bin/mamba install -y -c conda-forge\
+        'tensorflow-cpu>=2.8' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
