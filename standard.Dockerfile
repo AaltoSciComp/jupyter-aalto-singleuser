@@ -124,6 +124,13 @@ RUN \
         && \
     clean-layer.sh
 
+# css2023, RT#23164
+RUN \
+    /opt/software/bin/pip install \
+        'networkx==2.8.8' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
