@@ -147,6 +147,13 @@ RUN \
         && \
     clean-layer.sh
 
+# css2023, RT#23260
+RUN \
+    /opt/software/bin/pip install \
+        Wikipedia-API \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
