@@ -135,8 +135,15 @@ RUN \
 # This creates a 4GB layer because a lot of packages are updated, but
 # couldn't figure out a more efficient way
 RUN \
-    /opt/software/bin/mamba install -y -c conda-forge\
+    /opt/software/bin/mamba install -y -c conda-forge \
         'tensorflow-cpu>=2.8' \
+        && \
+    clean-layer.sh
+
+# bdaaccounting2023
+RUN \
+    /opt/software/bin/mamba install -y -c conda-forge \
+        'statsforecast' \
         && \
     clean-layer.sh
 
