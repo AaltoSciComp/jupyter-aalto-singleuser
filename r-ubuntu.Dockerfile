@@ -325,6 +325,21 @@ RUN \
 
 # ====================================
 
+RUN \
+    # Making sure that the file has a newline at the end before appending
+    echo >> /etc/jupyter/nbgrader_config.py && \
+    # NOTE: this syntax requires BuildKit
+    cat <<EOF >> /etc/jupyter/nbgrader_config.py
+c = get_config()
+c.ClearSolutions.code_stub = {
+    "R": "# your code here\nraise NotImplementedError",
+    "python": "# your code here\nraise NotImplementedError",
+    "javascript": "// your code here\nthrow new Error();"
+}
+EOF
+
+# ====================================
+
 #
 # TODO: Last-added packages, move to above when rebuilding
 #
