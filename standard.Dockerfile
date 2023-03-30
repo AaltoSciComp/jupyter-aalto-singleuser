@@ -181,6 +181,11 @@ RUN \
     /opt/software/bin/mamba install -p /opt/conda/ 'conda>4.12.0' && \
     clean-layer.sh
 
+# Updating jupyter_client to fix autograding timeout
+RUN \
+    /opt/conda/bin/mamba install 'jupyter_client>7.1.2,<8' && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
