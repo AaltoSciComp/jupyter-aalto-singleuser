@@ -170,6 +170,17 @@ RUN \
 RUN \
     rm -r /home/jovyan/.conda/pkgs
 
+# TODO: Remove when layers are combined. The script needs to be updated before
+# the next mamba command
+COPY scripts/clean-layer.sh /usr/local/bin/
+RUN chmod a+rx /usr/local/bin/clean-layer.sh
+
+# The installed version of mamba had a bug in the dependency definitions,
+# actually requires a more recent version of conda
+RUN \
+    /opt/software/bin/mamba install -p /opt/conda/ 'conda>4.12.0' && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
