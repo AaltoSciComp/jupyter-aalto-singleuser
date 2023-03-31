@@ -156,6 +156,16 @@ RUN \
 
 # ========================================
 
+RUN \
+    # The software package that's imported as a tar includes an incorrect
+    # condarc file, using a modified version of the jupyter default instead
+    cp /opt/conda/.condarc /opt/software/.condarc && \
+    conda config --system --append channels defaults && \
+    conda config --system --set channel_priority flexible && \
+    conda config --system --set ssl_verify /etc/ssl/certs/ca-certificates.crt
+
+# ========================================
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY hooks/ scripts/ /usr/local/bin/
