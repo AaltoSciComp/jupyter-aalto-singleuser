@@ -162,7 +162,13 @@ RUN \
     cp /opt/conda/.condarc /opt/software/.condarc && \
     conda config --system --append channels defaults && \
     conda config --system --set channel_priority flexible && \
-    conda config --system --set ssl_verify /etc/ssl/certs/ca-certificates.crt
+    conda config --system --set ssl_verify /etc/ssl/certs/ca-certificates.crt && \
+    conda config --system --set allow_softlinks false
+
+# TODO: Remove when layers are combined. The package cache will be
+# automatically cleaned by clean-layer.sh in the future
+RUN \
+    rm -r /home/jovyan/.conda/pkgs
 
 # ========================================
 

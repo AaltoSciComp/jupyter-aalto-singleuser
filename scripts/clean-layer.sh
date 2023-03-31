@@ -3,8 +3,8 @@ rm -rf /tmp/*
 
 rm -rf /home/$NB_USER/.cache/yarn
 
-/opt/conda/bin/mamba clean --all --yes
-/opt/software/bin/mamba clean --all --yes
+/opt/conda/bin/mamba clean --all --yes --force-pkgs-dirs
+/opt/software/bin/mamba clean --all --yes --force-pkgs-dirs
 mountpoint -q /opt/conda/pkgs/cache/ || rm -rf /opt/conda/pkgs/cache/
 mountpoint -q /opt/software/pkgs/cache/ || rm -rf /opt/software/pkgs/cache/
 mountpoint -q /root/.cache/pip/ || rm -rf /root/.cache/pip/*
