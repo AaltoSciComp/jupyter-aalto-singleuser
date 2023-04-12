@@ -5,7 +5,7 @@ CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
 # base image - jupyter stuff only, not much software
 VER_BASE=5.0
 # Python
-VER_STD=5.0.26
+VER_STD=5.0.26-hona2023-matlab
 # Julia
 VER_JULIA=5.0.16
 # R
@@ -42,7 +42,7 @@ base: no-pack pre-build
 	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) . -f base.Dockerfile --build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER)
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) conda env export -n base > environment-yml/$@-$(VER_BASE).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) conda list --revisions > conda-history/$@-$(VER_BASE).yml
-standard: | include-pack build-standard no-pack
+standard: | check-ml-license-server include-pack build-standard no-pack
 build-standard: pre-build
 	@! grep -P '\t' -C 1 standard.Dockerfile || { echo "ERROR: Tabs in standard.Dockerfile" ; exit 1 ; }
 	mkdir -p conda
@@ -62,7 +62,8 @@ build-standard: pre-build
 		--build-arg=ENVIRONMENT_NAME=$(ENVIRONMENT_NAME) \
 		--build-arg=ENVIRONMENT_VERSION=$(ENVIRONMENT_VERSION) \
 		--build-arg=ENVIRONMENT_HASH=$(ENVIRONMENT_HASH) \
-		--build-arg=VER_STD=$(VER_STD)
+		--build-arg=VER_STD=$(VER_STD) \
+		--build-arg=LICENSE_SERVER=$(ML_LICENSE_SERVER)
 	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
 	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
 #r:
@@ -164,6 +165,11 @@ endif
 check-hubrepo:
 ifndef HUBREPO
 	$(error HUBREPO is undefined. Format: HUBREPO=dockerhub_repo_name)
+endif
+
+check-ml-license-server:
+ifndef ML_LICENSE_SERVER
+	$(error ML_LICENSE_SERVER is undefined. Format: ML_LICENSE_SERVER=port@hostname)
 endif
 
 no-pack:

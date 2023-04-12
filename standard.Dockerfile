@@ -33,8 +33,8 @@ RUN /usr/local/bin/update-software.sh /tmp/delta.tardiff
 # Custom installations
 #RUN apt-get update && \
 #    apt-get install -y --no-install-recommends \
-#           ... \
-#           && \
+#        ... \
+#    && \
 #    clean-layer.sh
 
 # Update nbgrader
@@ -186,7 +186,91 @@ RUN \
     /opt/conda/bin/mamba install 'jupyter_client>7.1.2,<8' && \
     clean-layer.sh
 
-# ========================================
+# hona2023-brain, RT#23326
+# =============== matlab ===============
+
+# This installation process is mostly derived from Mathworks' matlab-dockerfile
+# https://github.com/mathworks-ref-arch/matlab-dockerfile
+
+# To specify which MATLAB release to install in the container, edit the value
+# of the MATLAB_RELEASE argument. Use lower case to specify the release, for
+# example: ARG MATLAB_RELEASE=r2021b
+ARG MATLAB_RELEASE=r2023a
+
+# Format: LICENSE_SERVER=port@hostname
+ARG LICENSE_SERVER
+
+# === matlab-deps ===
+# Mostly follows steps from
+# https://github.com/mathworks-ref-arch/container-images/blob/d10d5000e1fdb6bd2911594d21219543397e27ff/matlab-deps/r2023a/ubuntu20.04/Dockerfile
+# This file copied from
+# https://github.com/mathworks-ref-arch/container-images/blob/d10d5000e1fdb6bd2911594d21219543397e27ff/matlab-deps/r2023a/ubuntu20.04/base-dependencies.txt
+COPY matlab-dependencies.txt /tmp/matlab-dependencies.txt
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+           $(cat /tmp/matlab-dependencies.txt) \
+           && \
+    clean-layer.sh
+# Copied from matlab-deps, is this actually needed?
+RUN [ -d /usr/share/X11/xkb ] || mkdir -p /usr/share/X11/xkb
+# Install patched glibc - See https://github.com/mathworks/build-glibc-bz-19329-patch
+# Note: matlab-dependencies.txt includes wget, libcrypt-dev and linux-libc-dev to enable installation of patched -dev packages
+WORKDIR /packages
+RUN \
+    wget -q https://github.com/mathworks/build-glibc-bz-19329-patch/releases/download/ubuntu-focal/all-packages.tar.gz && \
+    tar -x -f all-packages.tar.gz \
+        --exclude glibc-*.deb \
+        --exclude libc6-dbg*.deb \
+    && \
+    apt-get install --yes --no-install-recommends ./*.deb && \
+    rm -fr /packages
+WORKDIR /
+# === /matlab-deps ===
+
+# Install mpm dependencies
+RUN \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        wget \
+        unzip \
+        ca-certificates \
+    && \
+    clean-layer.sh
+
+# Run mpm to install MATLAB in the target location and delete the mpm installation afterwards.
+# If mpm fails to install successfully then output the logfile to the terminal, otherwise cleanup.
+RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
+    && chmod +x mpm \
+    && ./mpm install \
+    --release=${MATLAB_RELEASE} \
+    --destination=/opt/matlab \
+    --products MATLAB \
+    || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) \
+    && rm -f mpm /tmp/mathworks_root.log \
+    && ln -s /opt/matlab/bin/matlab /usr/local/bin/matlab
+
+ENV MLM_LICENSE_FILE=$LICENSE_SERVER
+
+RUN \
+    /opt/conda/bin/pip install \
+        jupyter-matlab-proxy \
+        && \
+    clean-layer.sh
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        xvfb \
+    && \
+    clean-layer.sh
+
+RUN \
+    mkdir -p /opt/toolbox && \
+    wget https://www.nitrc.org/frs/download.php/5064/NBS1.2.zip -O /tmp/NBS1.2.zip && \
+    unzip /tmp/NBS1.2.zip -d /opt/toolbox && \
+    rm /tmp/NBS1.2.zip && \
+    fix-permissions /opt/toolbox
+
+# =============== /matlab ===============
 
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
