@@ -5,17 +5,22 @@ USER root
 
 ADD scripts/clean-layer.sh /usr/local/bin/
 
-## Debian packages
-# These are from scipy-notebook and needed for matplotlib/latex:
-#  ffmpeg dvipng cm-super
-# See https://github.com/jupyter/docker-stacks/blob/master/scipy-notebook/Dockerfile
+## Apt packages
+# Some of these are copied from the scipy-notebook Dockerfile
+# See https://github.com/jupyter/docker-stacks/blob/main/scipy-notebook/Dockerfile
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        clang \
+        # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
+        # and general use
+        build-essential \
+        # for latex labels
         cm-super \
         dvipng \
-        ed \
+        # for matplotlib anim
         ffmpeg \
+        # misc
+        clang \
+        ed \
         file \
         git-annex \
         git-lfs \
@@ -27,7 +32,6 @@ RUN apt-get update && \
         man-db \
         psmisc \
         vim \
-        build-essential \
         && \
     clean-layer.sh
 

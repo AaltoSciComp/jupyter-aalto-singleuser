@@ -1,5 +1,8 @@
-UPSTREAM_MINIMAL_NOTEBOOK_VER=6e246ea4bbff  # 2021-11-20
-UPSTREAM_SCIPY_NOTEBOOK_VER=d113a601dbb8  # Image updated 2020-12-26
+# https://hub.docker.com/r/jupyter/minimal-notebook
+# f8aca249b70b: 2022-12-19, hub-3.1.0, notebook-6.5.2,  ubuntu-22.04, lab-3.5.1, python-3.10.8
+# ed2908bbb62e: 2022-10-22, hub-3.0.0, notebook-6.4.12, ubuntu-22.04, lab-3.4.8, python-3.9.13
+# 4d70cf8da953: 2023-05-30, hub-4.0.0, notebook-6.5.4,  ubuntu-22.04, lab=4.0.1, python-3.10.11, node-18.15.0
+UPSTREAM_MINIMAL_NOTEBOOK_VER=4d70cf8da953
 CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
 
 # base image - jupyter stuff only, not much software
