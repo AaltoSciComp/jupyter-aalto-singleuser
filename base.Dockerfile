@@ -51,8 +51,6 @@ RUN mamba install -y 'jupyterhub>=1.4.2,<2' && \
 # Custom extension installations
 #   importnb allows pytest to test ipynb
 RUN \
-    #conda config --prepend channels conda-forge && \
-    # TODO: is this set already?
     conda config --system --set channel_priority strict && \
     mamba install -y \
         bash_kernel \
@@ -60,6 +58,8 @@ RUN \
         importnb \
         inotify_simple \
         ipywidgets \
+        # TODO: replace with https://jupyterlab-contrib.github.io/migrate_from_classical.html
+        #       when switching to JupyterLab for good
         jupyter_contrib_nbextensions \
         nbval \
         pipdeptree \
@@ -73,7 +73,6 @@ RUN \
     clean-layer.sh
 
 RUN \
-    #mamba install jupyterlab==2.* && \
     mamba install -y \
         jupyterlab-git \
         nbdime \
@@ -81,33 +80,19 @@ RUN \
         nbstripout \
         && \
     jupyter labextension install \
-                                # Deprecated, hub is now a built-in
-                                #  @jupyterlab/hub-extension \
-                                 @jupyter-widgets/jupyterlab-manager \
-                                 @jupyterlab/git \
-                                # Incompatible with jupyterlab 3.*
-                                 #@fissio/hub-top-buttons \
-                                # Incompatible with jupyterlab 1.0.2
-                                 nbdime-jupyterlab \
-                                 # https://github.com/lckr/jupyterlab-variableInspector/issues/232
-                                 #@lckr/jupyterlab_variableinspector \
-                                jupyter-matplotlib \
-                                && \
+        @jupyter-widgets/jupyterlab-manager \
+        @jupyterlab/git \
+        # Incompatible with jupyterlab 3.*
+        # @fissio/hub-top-buttons \
+        nbdime-jupyterlab \
+        # https://github.com/lckr/jupyterlab-variableInspector/issues/232
+        #@lckr/jupyterlab_variableinspector \
+        jupyter-matplotlib \
+        && \
     nbdime config-git --enable --system && \
     jupyter serverextension enable nbgitpuller --sys-prefix && \
     git config --system core.editor nano && \
     clean-layer.sh
-
-#    jupyter serverextension enable --py nbdime --sys-prefix && \
-#    jupyter nbextension install --py nbdime --sys-prefix && \
-#    jupyter nbextension enable --py nbdime --sys-prefix && \
-#    jupyter nbextension enable varInspector/main --sys-prefix && \
-#    jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
-#    jupyter serverextension enable --py nbzip --sys-prefix && \
-#    jupyter nbextension install --py nbzip && \
-#    jupyter nbextension enable --py nbzip && \
-
-
 
 # Nbgrader
 RUN pip install --no-cache-dir git+https://github.com/AaltoSciComp/nbgrader@live-2020 && \
@@ -124,13 +109,11 @@ RUN pip install --no-cache-dir git+https://github.com/AaltoSciComp/nbgrader@live
     jupyter nbextension disable --sys-prefix create_assignment/main && \
     jupyter nbextension disable --sys-prefix course_list/main --section=tree && \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.course_list && \
-    #sed -i "s@assert '0600' ==.*@assert stat.S_IMODE(os.stat(fname).st_mode) \& 0o77 == 0@" \
-    #    /opt/conda/lib/python3.8/site-packages/jupyter_client/connect.py && \
     clean-layer.sh
 
 
-# Hooks and scrips are also copied at the end of other Dockerfiles because they
-# might update frequently
+# Hooks and scripts are also copied at the end of other Dockerfiles because
+# they might update frequently
 COPY hooks/ scripts/ /usr/local/bin/
 RUN chmod a+rx /usr/local/bin/*.sh
 
