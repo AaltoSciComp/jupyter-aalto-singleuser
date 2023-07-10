@@ -25,8 +25,6 @@ RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
         libopenblas-dev \
         liblapack-dev \
         r-base \
-        # TODO: remove when base image is updated
-        build-essential \
         # for rstan
         libnode-dev \
         # htbioinformatics2019, for fastcq
@@ -56,10 +54,6 @@ RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
 
 ARG CRAN_URL
 ARG INSTALL_JOB_COUNT
-
-# TODO: remove when base contains this
-COPY scripts/install-r-packages.sh  /usr/local/bin/
-RUN chmod +x /usr/local/bin/install-r-packages.sh
 
 RUN \
     install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} \
@@ -312,20 +306,6 @@ RUN \
     unzip plink_linux_x86_64_20190304.zip && \
     ln -s $PWD/plink /usr/local/bin/ && \
     fix-permissions /opt/plink /usr/local/bin
-
-# ====================================
-
-# TODO: remove when base has a new enough nbgrader
-RUN \
-    # TODO: remove this limitation when the base image contains a recent enough
-    # nodejs, or when we're installing a built version of nbgrader instead of
-    # cloning and building locally
-    /opt/conda/bin/mamba install 'nodejs>=16,<18' && \
-    /opt/conda/bin/pip uninstall nbgrader -y && \
-    /opt/conda/bin/pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.2.dev500 && \
-    /opt/conda/bin/jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
-    clean-layer.sh
 
 # ====================================
 
