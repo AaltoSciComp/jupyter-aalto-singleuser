@@ -95,12 +95,9 @@ RUN \
     clean-layer.sh
 
 # Nbgrader
-RUN pip install --no-cache-dir git+https://github.com/AaltoSciComp/nbgrader@live-2020 && \
-    # nbconvert 6 changed a lot, and nbgrader needs updating
-    # old PR/discussion: https://github.com/jupyter/nbgrader/pull/1405
-    # current PR: https://github.com/jupyter/nbgrader/pull/1421
-    # this remains a major problem.
-    mamba install -y 'nbconvert<6' && \
+RUN \
+    pip install --no-cache-dir \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.2.dev500 && \
     jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     jupyter nbextension enable --sys-prefix --py nbgrader && \
     jupyter serverextension enable --sys-prefix --py nbgrader && \
