@@ -186,6 +186,13 @@ RUN \
     /opt/conda/bin/mamba install 'jupyter_client>7.1.2,<8' && \
     clean-layer.sh
 
+# RT#23949
+RUN \
+    /opt/software/bin/mamba install -y --freeze-installed -c conda-forge\
+        sage \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
