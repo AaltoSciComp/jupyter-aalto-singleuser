@@ -50,11 +50,11 @@ standard: pre-build update-environment
 	@! grep -P '\t' -C 1 standard.Dockerfile || { echo "ERROR: Tabs in standard.Dockerfile" ; exit 1 ; }
 	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) . \
 		-f standard.Dockerfile \
-		--build-arg=VER_BASE=$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
 		--build-arg=VER_STD=$(VER_STD)
-	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
-	#docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
+#	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
+#	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
 #r:
 #	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-r:0.4.0 --pull=false . -f r.Dockerfile
 r-ubuntu: pre-build
