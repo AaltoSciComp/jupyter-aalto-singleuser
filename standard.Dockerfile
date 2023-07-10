@@ -65,6 +65,11 @@ RUN \
 
 # ========================================
 
+RUN \
+    # Already installed to /opt/conda, but needs to also exist in /opt/software
+    /opt/software/bin/python -m bash_kernel.install --sys-prefix && \
+    clean-layer.sh
+
 #
 # TODO: Last-added packages, move to builder when doing a full rebuild
 #

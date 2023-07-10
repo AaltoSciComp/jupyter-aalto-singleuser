@@ -20,8 +20,8 @@ VER_CV=1.8.0
 BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda-dev
 ENVIRONMENT_NAME=jupyter-generic
 ENVIRONMENT_VERSION=2023-07-10-dev2
-# Builder commit 641e7d4705c54fbfc04f10ca112f11525b7692c8
-ENVIRONMENT_HASH=8261e533
+# Builder commit cde7a2fc9959a89ef02b4bf860d2ca1d1a2faaa7
+ENVIRONMENT_HASH=3d8e4135
 
 ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSION)/$(ENVIRONMENT_HASH)/environment.yml
 
