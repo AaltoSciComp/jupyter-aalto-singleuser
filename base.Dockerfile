@@ -32,6 +32,9 @@ RUN apt-get update && \
         man-db \
         psmisc \
         vim \
+        ncdu \
+        quota \
+        zip \
         && \
     clean-layer.sh
 
@@ -78,6 +81,9 @@ RUN \
         nbdime \
         nbgitpuller \
         nbstripout \
+        && \
+    pip install --no-cache-dir \
+        envkernel \
         && \
     jupyter labextension install \
         @jupyter-widgets/jupyterlab-manager \
