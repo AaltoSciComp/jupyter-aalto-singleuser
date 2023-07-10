@@ -30,21 +30,6 @@ RUN /usr/local/bin/update-software.sh /tmp/delta.tardiff
 # The delta file was generated using the following command:
 #   tar-diff /m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda/packs/jupyter-generic_2022-03-07_{560c880a,aaa369e3}.tar.gz delta_560c880a-aaa369e3.tardiff
 
-# Custom installations
-#RUN apt-get update && \
-#    apt-get install -y --no-install-recommends \
-#           ... \
-#           && \
-#    clean-layer.sh
-
-# Update nbgrader
-RUN \
-    pip uninstall nbgrader -y && \
-    pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@live-2022#egg=nbgrader==0.7.0-dev3+aalto && \
-    jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
-    clean-layer.sh
-
 # requires bdaaccounting collection in the builder
 RUN \
     echo [FreeTDS] >> /etc/odbcinst.ini && \
@@ -64,39 +49,39 @@ RUN echo "import os ; os.environ['PATH'] = '/opt/software/bin:'+os.environ['PATH
 ENV PATH=/opt/software/bin:${PATH}
 ENV CONDA_DIR=/opt/software
 
-# ========================================
-
-# dlpython2022, RT#22328
-RUN \
-    /opt/software/bin/mamba install -y --freeze-installed \
-        jsonpickle \
-        && \
-    clean-layer.sh
-
-# dhhb2022, RT#22440
-RUN \
-    /opt/software/bin/mamba install -y --freeze-installed -c conda-forge \
-        vaderSentiment \
-        && \
-    pip install --no-cache-dir \
-        liwc \
-        && \
-    clean-layer.sh
-
-# deeplearn2023, RT#22643
-RUN \
-    apt-get update && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        && \
-    pip install --no-cache-dir \
-        einops \
-        'certifi>2021.10.8' \
-        && \
-    clean-layer.sh
-
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 # ========================================
+
+RUN \
+    # The software package that's imported as a tar includes an incorrect
+    # condarc file, using a modified version of the jupyter default instead
+    echo -n > /opt/software/.condarc && \
+    /opt/software/bin/conda config --system --append channels conda-forge && \
+    /opt/software/bin/conda config --system --append channels defaults && \
+    /opt/software/bin/conda config --system --set auto_update_conda false && \
+    /opt/software/bin/conda config --system --set show_channel_urls true && \
+    /opt/software/bin/conda config --system --set channel_priority flexible && \
+    /opt/software/bin/conda config --system --set ssl_verify /etc/ssl/certs/ca-certificates.crt && \
+    /opt/software/bin/conda config --system --set allow_softlinks false
+
+# ========================================
+
+#
+# TODO: Last-added packages, move to builder when doing a full rebuild
+#
+# # coursecode, RT#00000
+# RUN \
+#     apt-get update && apt-get install -y --no-install-recommends \
+#         packagename \
+#         && \
+#     /opt/software/bin/mamba install -y --freeze-installed \
+#         packagename \
+#         && \
+#     pip install --no-cache-dir \
+#         packagename \
+#         && \
+#     clean-layer.sh
 
 # Update nbgrader
 RUN \
@@ -109,66 +94,6 @@ RUN \
     /opt/conda/bin/jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     clean-layer.sh
 
-# css2023, RT#23019
-RUN \
-    /opt/software/bin/mamba install -y --freeze-installed \
-        transformers \
-        && \
-    clean-layer.sh
-
-# hona2023-brain, RT#22805
-RUN \
-    /opt/software/bin/mamba install -y --freeze-installed -c conda-forge\
-        nilearn \
-        nibabel \
-        && \
-    clean-layer.sh
-
-# css2023, RT#23164
-RUN \
-    /opt/software/bin/pip install \
-        'networkx==2.8.8' \
-        && \
-    clean-layer.sh
-
-# gausproc2023, RT#23193
-# This creates a 4GB layer because a lot of packages are updated, but
-# couldn't figure out a more efficient way
-RUN \
-    /opt/software/bin/mamba install -y -c conda-forge \
-        'tensorflow-cpu>=2.8' \
-        && \
-    clean-layer.sh
-
-# bdaaccounting2023
-RUN \
-    /opt/software/bin/mamba install -y -c conda-forge \
-        'statsforecast' \
-        && \
-    clean-layer.sh
-
-# css2023, RT#23260
-RUN \
-    /opt/software/bin/pip install \
-        Wikipedia-API \
-        && \
-    clean-layer.sh
-
-# ========================================
-
-RUN \
-    # The software package that's imported as a tar includes an incorrect
-    # condarc file, using a modified version of the jupyter default instead
-    cp /opt/conda/.condarc /opt/software/.condarc && \
-    conda config --system --append channels defaults && \
-    conda config --system --set channel_priority flexible && \
-    conda config --system --set ssl_verify /etc/ssl/certs/ca-certificates.crt && \
-    conda config --system --set allow_softlinks false
-
-# TODO: Remove when layers are combined. The package cache will be
-# automatically cleaned by clean-layer.sh in the future
-RUN \
-    rm -r /home/jovyan/.conda/pkgs
 
 # TODO: Remove when layers are combined. The script needs to be updated before
 # the next mamba command
@@ -181,15 +106,39 @@ RUN \
     /opt/software/bin/mamba install -p /opt/conda/ 'conda>4.12.0' && \
     clean-layer.sh
 
-# Updating jupyter_client to fix autograding timeout
 RUN \
-    /opt/conda/bin/mamba install 'jupyter_client>7.1.2,<8' && \
-    clean-layer.sh
-
-# RT#23949
-RUN \
-    /opt/software/bin/mamba install -y --freeze-installed -c conda-forge\
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        && \
+    /opt/software/bin/mamba install -y --freeze-installed \
+        # dlpython2022, RT#22328
+        jsonpickle \
+        # css2023, RT#23019
+        transformers \
+        # Updating jupyter_client to fix autograding timeout
+        'jupyter_client>7.1.2,<8' \
+        # dhhb2022, RT#22440
+        vaderSentiment \
+        # hona2023-brain, RT#22805
+        nilearn \
+        nibabel \
+        # gausproc2023, RT#23193
+        'tensorflow-cpu>=2.8' \
+        # bdaaccounting2023
+        statsforecast \
+        # RT#23949
         sage \
+        && \
+    pip install --no-cache-dir \
+        # dhhb2022, RT#22440
+        liwc \
+        # deeplearn2023, RT#22643
+        einops \
+        'certifi>2021.10.8' \
+        # css2023, RT#23164
+        'networkx>=2.8.8,<3' \
+        # css2023, RT#23260
+        Wikipedia-API \
         && \
     clean-layer.sh
 
