@@ -25,15 +25,13 @@ ENVIRONMENT_HASH=3d8e4135
 
 ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSION)/$(ENVIRONMENT_HASH)/environment.yml
 
-# VER2_R=$(VER_R)-$(GIT_REV)
 TEST_MEM_LIMIT="--memory=2G"
 R_INSTALL_JOB_COUNT=10
 
 # For private registry, run: `make REGISTRY=registry.cs.aalto.fi/ GROUP=jupyter [..]`
-REGISTRY=                   # use the form "registry.cs.aalto.fi/"
-# REGISTRY=registry.cs.aalto.fi/
+REGISTRY=
 GROUP=aaltoscienceit
-# GROUP=jupyter
+
 
 .PHONY: default
 
@@ -132,7 +130,7 @@ pull-julia: check-khost check-knodes
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker pull ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA}"
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker tag ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA} ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA}"
 
-pull-standard-dev:
+pull-standard-dev: push-standard
 	ssh 3 ctr -n k8s.io images pull ${REGISTRY}${GROUP}/notebook-server:${VER_STD}
 pull-r-dev: push-r-ubuntu
 	ssh 3 ctr -n k8s.io images pull ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_R}
