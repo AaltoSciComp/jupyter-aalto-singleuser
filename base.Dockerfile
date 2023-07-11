@@ -114,6 +114,13 @@ RUN \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.course_list && \
     clean-layer.sh
 
+RUN \
+    # jupyter_lsp gets installed as a dependency but it doesn't work with the
+    # legacy notebook interface. Should be enabled again after migrating to
+    # jupyter-server.
+    # https://github.com/jupyter-lsp/jupyterlab-lsp/issues/943
+    jupyter serverextension disable jupyter_lsp && \
+    clean-layer.sh
 
 # Hooks and scripts are also copied at the end of other Dockerfiles because
 # they might update frequently
