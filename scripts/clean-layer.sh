@@ -16,6 +16,7 @@ apt-get autoremove -y
 apt-get clean
 rm -rf /var/lib/apt/lists/*
 
-fix-permissions /opt/conda /opt/software /home/$NB_USER
+fix-permissions /opt/conda /home/$NB_USER
+[ -d /opt/software ] && fix-permissions /opt/software
 
 } 2>&1 | sed -e 's/^/clean-layer:    /'
