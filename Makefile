@@ -17,11 +17,11 @@ VER_R=5.0.25
 VER_CV=1.8.0
 
 # Software for the standard image
-BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda-dev
+BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda
 ENVIRONMENT_NAME=jupyter-generic
-ENVIRONMENT_VERSION=2023-07-10-dev2
-# Builder commit cde7a2fc9959a89ef02b4bf860d2ca1d1a2faaa7
-ENVIRONMENT_HASH=3d8e4135
+ENVIRONMENT_VERSION=2023-07-12
+# Built from https://github.com/AaltoSciComp/science-build-configs/commit/f6d7d25eb19dcd3c8283a5f77d907b7218f36c37
+ENVIRONMENT_HASH=2a58d30f
 
 ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSION)/$(ENVIRONMENT_HASH)/environment.yml
 
