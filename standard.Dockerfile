@@ -86,6 +86,31 @@ RUN \
 #         && \
 #     clean-layer.sh
 
+# rl2023, RT#23957
+RUN \
+    /opt/software/bin/mamba install -y --freeze-installed \
+        wandb \
+        hydra-core \
+        gym \
+        dm-env \
+        opencv \
+        pygame \
+        ipdb \
+        moviepy \
+        && \
+    pip install --no-cache-dir \
+        # No conda package available:
+        # https://github.com/conda-forge/staged-recipes/issues/23131
+        bsuite \
+        # With --freeze-installed:
+        # - package dm-control-1.0.9-pyhd8ed1ab_0 requires mujoco >=2.3.0,
+        #   but none of the providers can be installed
+        # without:
+        # - nothing provides path.py >=7.1,<8 needed by sage-8.1-py27_1
+        dm-control \
+        && \
+    clean-layer.sh
+
 # Install/update nbgrader
 # RUN \
 #     # Use the full path to pip to be more explicit about which environment
