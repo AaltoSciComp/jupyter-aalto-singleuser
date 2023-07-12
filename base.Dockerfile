@@ -4,6 +4,8 @@ FROM jupyter/minimal-notebook:${UPSTREAM_MINIMAL_NOTEBOOK_VER}
 USER root
 
 ADD scripts/clean-layer.sh /usr/local/bin/
+# Prevent fix-permissions from touching targets of links again and again
+RUN sed -i 's/-exec chgrp/-exec chgrp -h/' /usr/local/bin/fix-permissions
 
 ## Apt packages
 # Some of these are copied from the scipy-notebook Dockerfile
