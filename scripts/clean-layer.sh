@@ -8,6 +8,7 @@ rm -rf /home/$NB_USER/.cache/yarn
 mountpoint -q /opt/conda/pkgs/cache/ || rm -rf /opt/conda/pkgs/cache/
 mountpoint -q /opt/software/pkgs/cache/ || rm -rf /opt/software/pkgs/cache/
 mountpoint -q /root/.cache/pip/ || rm -rf /root/.cache/pip/*
+mountpoint -q /home/$NB_USER/.cache/pip/ || rm -rf /home/$NB_USER/.cache/pip/*
 
 npm cache clean --force
 rm -rf /home/$NB_USER/.npm/_logs
