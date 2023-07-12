@@ -15,7 +15,7 @@ VER_BASE_CACHE=6.2
 # Python
 VER_STD=6.1.2
 # See the comment for VER_BASE_CACHE
-VER_STD_CACHE=6.1.1
+VER_STD_CACHE=6.1.2
 
 # Julia
 VER_JULIA=5.0.16-jh401

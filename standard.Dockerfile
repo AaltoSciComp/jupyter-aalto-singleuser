@@ -102,6 +102,50 @@ RUN \
 
 # ========================================
 
+# rl2023, RT#23957
+RUN \
+    /opt/software/bin/mamba install -y --freeze-installed \
+        wandb \
+        hydra-core \
+        dm-env \
+        opencv \
+        pygame \
+        ipdb \
+        moviepy \
+        # rl2023, RT#24125
+        mujoco-python \
+        && \
+    pip install --no-cache-dir \
+        # No conda package available:
+        # https://github.com/conda-forge/staged-recipes/issues/23131
+        bsuite \
+        # With --freeze-installed:
+        # - package dm-control-1.0.9-pyhd8ed1ab_0 requires mujoco >=2.3.0,
+        #   but none of the providers can be installed
+        # without:
+        # - nothing provides path.py >=7.1,<8 needed by sage-8.1-py27_1
+        dm-control \
+        # rl2023, RT#24125
+        gymnasium[mujoco] \
+        && \
+    clean-layer.sh
+
+# https://pytorch.org/rl/reference/generated/knowledge_base/MUJOCO_INSTALLATION.html
+
+ENV PYOPENGL_PLATFORM=egl MUJOCO_GL=egl
+
+RUN \
+    apt-get update && apt-get install -y --no-install-recommends \
+        libegl1 \
+        libglfw3 \
+        libglew2.2 \
+        libgl1-mesa-glx \
+        libosmesa6 \
+        && \
+    clean-layer.sh
+
+# ========================================
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
