@@ -8,7 +8,7 @@ CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
 # base image - jupyter stuff only, not much software
 VER_BASE=6.0
 # Python
-VER_STD=6.0.0
+VER_STD=6.0.0-rl2023
 # Julia
 VER_JULIA=5.0.16
 # R
