@@ -28,10 +28,13 @@ ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSIO
 TEST_MEM_LIMIT="--memory=2G"
 R_INSTALL_JOB_COUNT=10
 
-# For private registry, run: `make REGISTRY=registry.cs.aalto.fi/ GROUP=jupyter [..]`
+# For private registry, run: `make REGISTRY=registry.cs.aalto.fi/ GROUP=jupyter [BASE_REG_GROUP=aaltoscienceit] [..]`
 REGISTRY=
 GROUP=aaltoscienceit
 
+# Optional hostname ("registry") and namespace ("group") for the base image.
+# When left empty, defaults to the same values as the standard image.
+BASE_REG_GROUP=${REGISTRY}${GROUP}
 
 .PHONY: default
 
@@ -43,14 +46,14 @@ full-rebuild: base standard test-standard
 
 base: pre-build
 	@! grep -P '\t' -C 1 base.Dockerfile || { echo "ERROR: Tabs in base.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) . -f base.Dockerfile --build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER)
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) conda env export -n base > environment-yml/$@-$(VER_BASE).yml
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) conda list --revisions > conda-history/$@-$(VER_BASE).yml
+	DOCKER_BUILDKIT=1 docker build -t $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) . -f base.Dockerfile --build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER)
+	docker run --rm $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) conda env export -n base > environment-yml/$@-$(VER_BASE).yml
+	docker run --rm $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) conda list --revisions > conda-history/$@-$(VER_BASE).yml
 standard: pre-build update-environment
 	@! grep -P '\t' -C 1 standard.Dockerfile || { echo "ERROR: Tabs in standard.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) . \
+	DOCKER_BUILDKIT=1 docker build -t $(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) . \
 		-f standard.Dockerfile \
-		--build-arg=BASE_IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
 		--build-arg=VER_STD=$(VER_STD)
 #	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
@@ -116,7 +119,7 @@ push-devhub: check-khost check-hubrepo standard
 	docker push ${HUBREPO}/notebook-server:${VER_STD}
 	ssh ${KHOST} ssh k8s-node4.cs.aalto.fi "docker pull ${HUBREPO}/notebook-server:${VER_STD}"
 push-devhub-base: check-khost check-hubrepo base
-	docker tag ${REGISTRY}${GROUP}/notebook-server-base:${VER_BASE} ${HUBREPO}/notebook-server-base:${VER_BASE}
+	docker tag ${BASE_REG_GROUP}/notebook-server-base:${VER_BASE} ${HUBREPO}/notebook-server-base:${VER_BASE}
 	docker push ${HUBREPO}/notebook-server-base:${VER_BASE}
 	ssh ${KHOST} ssh k8s-node4.cs.aalto.fi "docker pull ${HUBREPO}/notebook-server-base:${VER_BASE}"
 
