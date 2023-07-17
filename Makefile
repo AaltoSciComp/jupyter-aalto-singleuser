@@ -6,9 +6,9 @@ UPSTREAM_MINIMAL_NOTEBOOK_VER=4d70cf8da953
 CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
 
 # base image - jupyter stuff only, not much software
-VER_BASE=6.0
+VER_BASE=6.1
 # Python
-VER_STD=6.0.0
+VER_STD=6.1.0
 # Julia
 VER_JULIA=5.0.16
 # R
