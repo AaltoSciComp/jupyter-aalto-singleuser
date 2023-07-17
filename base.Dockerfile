@@ -47,11 +47,11 @@ RUN apt-get update && \
 # pin the JupyterHub version
 # https://github.com/jupyterhub/jupyterhub/tree/master/singleuser
 
-# NOTE: Upstream image contains a newer version of JupyterHub but the
-#       jupyterhub-cs image is still on v1.4.2. Upgrading to >v2 requires
-#       a database migration.
-RUN mamba install -y 'jupyterhub>=1.4.2,<2' && \
-    clean-layer.sh
+# # NOTE: Upstream image contains a newer version of JupyterHub but the
+# #       jupyterhub-cs image is still on v1.4.2. Upgrading to >v2 requires
+# #       a database migration.
+# RUN mamba install -y 'jupyterhub>=1.4.2,<2' && \
+#     clean-layer.sh
 
 # Custom extension installations
 #   importnb allows pytest to test ipynb
