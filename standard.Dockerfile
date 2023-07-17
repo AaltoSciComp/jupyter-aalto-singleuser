@@ -93,7 +93,6 @@ RUN \
     /opt/conda/bin/pip uninstall nbgrader -y && \
     /opt/conda/bin/pip install --no-cache-dir \
         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
-    jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     clean-layer.sh
 
 # ========================================
