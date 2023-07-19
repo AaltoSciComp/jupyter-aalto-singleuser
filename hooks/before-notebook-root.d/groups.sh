@@ -1,7 +1,7 @@
 
 # Create extra groups in the container.
 
-# Format of NB_EXTRA_GROUPS "name:125,othergroup:1465641" of name:gid pairs.
+# Format of NB_CREATE_GROUPS "name:125,othergroup:1465641" of name:gid pairs.
 # NB_SUPPLEMENTARY_GROUPS:  comma-separated group list:  name,othergroup
 
 IFS=',' read -ra namesgids <<< "${NB_CREATE_GROUPS}"
