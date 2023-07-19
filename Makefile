@@ -49,7 +49,7 @@ base: pre-build
 	DOCKER_BUILDKIT=1 docker build -t $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) . -f base.Dockerfile --build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER)
 	docker run --rm $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) conda env export -n base > environment-yml/$@-$(VER_BASE).yml
 	docker run --rm $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) conda list --revisions > conda-history/$@-$(VER_BASE).yml
-standard: pre-build update-environment
+standard: pre-build
 	@! grep -P '\t' -C 1 standard.Dockerfile || { echo "ERROR: Tabs in standard.Dockerfile" ; exit 1 ; }
 	DOCKER_BUILDKIT=1 docker build -t $(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) . \
 		-f standard.Dockerfile \
