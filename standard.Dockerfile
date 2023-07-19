@@ -4,7 +4,7 @@ FROM ${BASE_IMAGE}
 USER root
 
 # Create software environment.
-COPY environment.yml /opt/environment.yml
+COPY --chmod=644 environment.yml /opt/environment.yml
 RUN \
     /opt/conda/bin/conda config --system --set channel_priority flexible && \
     /opt/conda/bin/mamba env create \
@@ -99,9 +99,7 @@ RUN \
 
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
-COPY hooks/ scripts/ /usr/local/bin/
-RUN chmod 755 /usr/local/bin/*.d
-RUN chmod a+rx /usr/local/bin/*.sh /usr/local/bin/*/*.sh
+COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 
 # Save version information within the image
 ARG VER_STD

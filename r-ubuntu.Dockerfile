@@ -356,7 +356,6 @@ ENV CC=clang CXX=clang++
 ENV BINPREF=PATH
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
-COPY hooks/ scripts/ /usr/local/bin/
-RUN chmod a+rx /usr/local/bin/*.sh
+COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 
 USER $NB_UID

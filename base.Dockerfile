@@ -3,7 +3,7 @@ FROM jupyter/minimal-notebook:${UPSTREAM_MINIMAL_NOTEBOOK_VER}
 
 USER root
 
-ADD scripts/clean-layer.sh /usr/local/bin/
+COPY --chmod=0755 scripts/clean-layer.sh /usr/local/bin/
 # Prevent fix-permissions from touching targets of links again and again
 RUN sed -i 's/-exec chgrp/-exec chgrp -h/' /usr/local/bin/fix-permissions
 
@@ -126,7 +126,6 @@ RUN \
 
 # Hooks and scripts are also copied at the end of other Dockerfiles because
 # they might update frequently
-COPY hooks/ scripts/ /usr/local/bin/
-RUN chmod a+rx /usr/local/bin/*.sh
+COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 
 USER $NB_UID
