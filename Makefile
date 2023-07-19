@@ -162,5 +162,11 @@ ifndef HUBREPO
 	$(error HUBREPO is undefined. Format: HUBREPO=dockerhub_repo_name)
 endif
 
+# Git only tracks the execute bit of the owner, no other permissions. Running
+# chmod makes sure that having a different umask on different machines doesn't
+# cause cache invalidation.
 pre-build:
 	mkdir -p conda-history environment-yml
+	chmod 600 environment.yml
+	find hooks scripts -type f -exec chmod 600 {} \;
+	find hooks scripts -type d -exec chmod 700 {} \;
