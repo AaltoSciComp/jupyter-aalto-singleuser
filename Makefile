@@ -7,8 +7,16 @@ CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
 
 # base image - jupyter stuff only, not much software
 VER_BASE=6.1
+# Set VER_BASE_CACHE to the version you want to use as the cache for the base
+# image. When bumping VER_BASE to build a new image, this should be set to the
+# previously published version for the duration of the build process.
+VER_BASE_CACHE=6.1
+
 # Python
 VER_STD=6.1.0
+# See the comment for VER_BASE_CACHE
+VER_STD_CACHE=6.1.0
+
 # Julia
 VER_JULIA=5.0.16
 # R
@@ -44,18 +52,32 @@ default:
 full-rebuild: base standard test-standard
 
 
-base: pre-build
+base: pre-build container-builder
 	@! grep -P '\t' -C 1 base.Dockerfile || { echo "ERROR: Tabs in base.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) . -f base.Dockerfile --build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER)
+	docker buildx build . \
+		-t $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		-f base.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER) \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE_CACHE)
 	docker run --rm $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) conda env export -n base > environment-yml/$@-$(VER_BASE).yml
 	docker run --rm $(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) conda list --revisions > conda-history/$@-$(VER_BASE).yml
-standard: pre-build
+standard: pre-build container-builder
 	@! grep -P '\t' -C 1 standard.Dockerfile || { echo "ERROR: Tabs in standard.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t $(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) . \
+	docker buildx build . \
+		-t $(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
 		-f standard.Dockerfile \
+		--builder=jupyter \
+		--load \
 		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
-		--build-arg=VER_STD=$(VER_STD)
+		--build-arg=VER_STD=$(VER_STD) \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD_CACHE)
 #	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda env export -n base > environment-yml/$@-$(VER_STD).yml
 #	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
 #r:
@@ -100,8 +122,11 @@ test-r-ubuntu: r-ubuntu pre-test
 	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript /tests/r/test_bayes.r
 	rm -r $(TEST_DIR)
 
-
-
+# Because the docker-container driver is isolated from the system docker and
+# can't access the default image store, the base image has to be pushed into a
+# registry before building other images
+push-base: base
+	docker push $(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
 push-standard: standard
 	docker push ${REGISTRY}${GROUP}/notebook-server:$(VER_STD)
 push-r-ubuntu: r-ubuntu
@@ -170,3 +195,8 @@ pre-build:
 	chmod 600 environment.yml
 	find hooks scripts -type f -exec chmod 600 {} \;
 	find hooks scripts -type d -exec chmod 700 {} \;
+
+container-builder:
+	if ! docker buildx inspect jupyter > /dev/null 2>&1; then \
+		docker buildx create --name jupyter --driver docker-container --use ; \
+	fi
