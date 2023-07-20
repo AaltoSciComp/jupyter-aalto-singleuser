@@ -198,5 +198,5 @@ pre-build:
 
 container-builder:
 	if ! docker buildx inspect jupyter > /dev/null 2>&1; then \
-		docker buildx create --name jupyter --driver docker-container --use ; \
+		docker buildx create --name jupyter --driver docker-container ; \
 	fi
