@@ -95,6 +95,11 @@ RUN \
         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
     clean-layer.sh
 
+RUN \
+    /opt/conda/pip install --no-cache-dir \
+        jupyterhub==4.0.1 && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
