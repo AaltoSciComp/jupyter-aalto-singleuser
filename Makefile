@@ -13,7 +13,7 @@ VER_BASE=6.1
 VER_BASE_CACHE=6.1
 
 # Python
-VER_STD=6.1.0
+VER_STD=6.1.1-dev-jh401
 # See the comment for VER_BASE_CACHE
 VER_STD_CACHE=6.1.0
 
