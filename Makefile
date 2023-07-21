@@ -19,8 +19,10 @@ VER_STD_CACHE=6.1.0
 
 # Julia
 VER_JULIA=5.0.16
+VER_JULIA_CACHE=5.0.16
 # R
 VER_R=5.0.25
+VER_R_CACHE=5.0.25
 # OpenCV
 VER_CV=1.8.0
 
@@ -84,12 +86,30 @@ standard: pre-build container-builder
 #	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-r:0.4.0 --pull=false . -f r.Dockerfile
 r-ubuntu: pre-build
 	@! grep -P '\t' -C 1 r-ubuntu.Dockerfile || { echo "ERROR: Tabs in r-ubuntu.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) --pull=false . -f r-ubuntu.Dockerfile --build-arg=VER_BASE=$(VER_BASE) --build-arg=CRAN_URL=$(CRAN_URL) --build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT)
+	docker buildx build . \
+		-t ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) \
+		-f r-ubuntu.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=VER_BASE=$(VER_BASE) \
+		--build-arg=CRAN_URL=$(CRAN_URL) \
+		--build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT) \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R_CACHE)
 #	#docker run --rm ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) conda env export -n base > environment-yml/$@-$(VER_R).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) conda list --revisions > conda-history/$@-$(VER_R).yml
 julia: pre-build
 	@! grep -P '\t' -C 1 julia.Dockerfile || { echo "ERROR: Tabs in julia.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) --pull=false . -f julia.Dockerfile --build-arg=VER_BASE=$(VER_BASE)
+	docker buildx build . \
+		-t ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) \
+		-f julia.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=VER_BASE=$(VER_BASE) \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda env export -n base > environment-yml/$@-$(VER_JULIA).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda list --revisions > conda-history/$@-$(VER_JULIA).yml
 opencv: pre-build
