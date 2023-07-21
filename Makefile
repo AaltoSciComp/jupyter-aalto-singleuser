@@ -18,10 +18,10 @@ VER_STD=6.1.0
 VER_STD_CACHE=6.1.0
 
 # Julia
-VER_JULIA=5.0.16
+VER_JULIA=5.0.16-jh401
 VER_JULIA_CACHE=5.0.16
 # R
-VER_R=5.0.25
+VER_R=5.0.25-jh401
 VER_R_CACHE=5.0.25
 # OpenCV
 VER_CV=1.8.0
@@ -53,6 +53,26 @@ default:
 
 full-rebuild: base standard test-standard
 
+r-jh401:
+	docker buildx build . \
+		-t ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_JULIA) \
+		-f jh-upgrade.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=BASE_IMAGE=${BASE_REG_GROUP}/notebook-server-r-ubuntu:5.0.25 \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R_CACHE)
+julia-jh401:
+	docker buildx build . \
+		-t ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) \
+		-f jh-upgrade.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=BASE_IMAGE=${BASE_REG_GROUP}/notebook-server-julia:5.0.16 \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)
 
 base: pre-build container-builder
 	@! grep -P '\t' -C 1 base.Dockerfile || { echo "ERROR: Tabs in base.Dockerfile" ; exit 1 ; }
