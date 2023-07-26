@@ -109,11 +109,18 @@ RUN \
     jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     jupyter nbextension enable --sys-prefix --py nbgrader && \
     jupyter serverextension enable --sys-prefix --py nbgrader && \
+    \
     jupyter nbextension disable --sys-prefix formgrader/main --section=tree && \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.formgrader && \
+    jupyter labextension disable --level=sys_prefix --no-build nbgrader/formgrader && \
+    \
     jupyter nbextension disable --sys-prefix create_assignment/main && \
+    jupyter labextension disable --level=sys_prefix --no-build nbgrader/create-assignment && \
+    \
     jupyter nbextension disable --sys-prefix course_list/main --section=tree && \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.course_list && \
+    jupyter labextension disable --level=sys_prefix --no-build nbgrader/course-list && \
+    jupyter lab build && \
     clean-layer.sh
 
 RUN \
