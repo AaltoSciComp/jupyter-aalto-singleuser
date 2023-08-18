@@ -120,7 +120,6 @@ RUN \
     jupyter nbextension disable --sys-prefix course_list/main --section=tree && \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.course_list && \
     jupyter labextension disable --level=sys_prefix --no-build nbgrader/course-list && \
-    jupyter lab build && \
     clean-layer.sh
 
 RUN \

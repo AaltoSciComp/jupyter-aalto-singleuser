@@ -5,10 +5,9 @@
 #jupyter serverextension enable --sys-prefix nbgrader.server_extensions.course_list
 
 # lab
-/opt/conda/bin/jupyter labextension enable --no-build nbgrader/formgrader
-#/opt/conda/bin/jupyter labextension enable --no-build nbgrader/course-list
-/opt/conda/bin/jupyter labextension enable --no-build nbgrader/create-assignment
-/opt/conda/bin/jupyter lab build
+/opt/conda/bin/jupyter labextension enable nbgrader/formgrader
+#/opt/conda/bin/jupyter labextension enable nbgrader/course-list
+/opt/conda/bin/jupyter labextension enable nbgrader/create-assignment
 
 # nbclassic
 /opt/conda/bin/jupyter nbextension enable --sys-prefix formgrader/main --section=tree
