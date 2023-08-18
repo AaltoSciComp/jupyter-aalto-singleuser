@@ -95,6 +95,11 @@ RUN \
         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
     clean-layer.sh
 
+# TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
+RUN \
+    /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
