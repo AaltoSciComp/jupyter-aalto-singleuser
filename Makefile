@@ -82,6 +82,7 @@ base: pre-build container-builder
 		--builder=jupyter \
 		--load \
 		--build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER) \
+		--build-arg=IMAGE_VERSION=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE_CACHE)
