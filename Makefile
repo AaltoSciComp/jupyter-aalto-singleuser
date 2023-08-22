@@ -167,7 +167,7 @@ test-r-ubuntu: r-ubuntu pre-test
 # registry before building other images
 push-base: base
 	docker push $(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
-push-standard: standard
+push-standard:
 	docker push ${REGISTRY}${GROUP}/notebook-server:$(VER_STD)
 push-r-ubuntu: r-ubuntu
 	docker push ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R)
@@ -198,7 +198,7 @@ pull-julia: check-khost check-knodes
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker pull ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA}"
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker tag ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA} ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA}"
 
-pull-standard-dev: push-standard
+pull-standard-dev:
 	ssh 3 ctr -n k8s.io images pull ${REGISTRY}${GROUP}/notebook-server:${VER_STD}
 pull-r-dev: push-r-ubuntu
 	ssh 3 ctr -n k8s.io images pull ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_R}
