@@ -3,7 +3,7 @@
 # ed2908bbb62e: 2022-10-22, hub-3.0.0, notebook-6.4.12, ubuntu-22.04, lab-3.4.8, python-3.9.13
 # 4d70cf8da953: 2023-05-30, hub-4.0.0, notebook-6.5.4,  ubuntu-22.04, lab=4.0.1, python-3.10.11, node-18.15.0
 UPSTREAM_MINIMAL_NOTEBOOK_VER=4d70cf8da953
-CRAN_URL=https://cran.microsoft.com/snapshot/2022-08-19/
+CRAN_URL=https://ftp.acc.umu.se/mirror/CRAN/
 
 # base image - jupyter stuff only, not much software
 VER_BASE=6.2

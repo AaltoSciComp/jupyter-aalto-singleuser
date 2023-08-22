@@ -210,17 +210,21 @@ ENV R_MAKEVARS_SITE /usr/lib/R/etc/Makevars
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         # rstudio-server dependencies, parsed from the .deb file
-        libclang-10-dev \
+        psmisc \
+        sudo \
+        lsb-release \
+        libssl-dev \
         libclang-dev \
+        libsqlite3-0 \
         libpq5 \
         && \
     clean-layer.sh
 
-ENV RSTUDIO_PKG=rstudio-server-2022.07.1-554-amd64.deb
-ENV RSTUDIO_CHECKSUM=b6778c0a78d69d836d5c812342a3697a19b83c80c2d6eb7162b38dedc6ad6b56
+ENV RSTUDIO_PKG=rstudio-server-2023.06.1-524-amd64.deb
+ENV RSTUDIO_CHECKSUM=208897f00b580b45c37dbb787dc482ff6d774b32c230f49578691b1a11f40c37
 # https://github.com/jupyterhub/nbrsessionproxy
 # Download url: https://www.rstudio.com/products/rstudio/download-server/
-RUN wget -q https://download2.rstudio.org/server/bionic/amd64/${RSTUDIO_PKG} && \
+RUN wget -q https://download2.rstudio.org/server/$(lsb_release -sc)/amd64/${RSTUDIO_PKG} && \
     test "$(sha256sum < ${RSTUDIO_PKG})" = "${RSTUDIO_CHECKSUM}  -" && \
     dpkg -i ${RSTUDIO_PKG} && \
     rm ${RSTUDIO_PKG}
