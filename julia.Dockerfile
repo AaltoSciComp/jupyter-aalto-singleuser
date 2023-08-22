@@ -1,5 +1,5 @@
-ARG VER_BASE
-FROM aaltoscienceit/notebook-server-base:${VER_BASE}
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 
 ## R support
 

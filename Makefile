@@ -112,7 +112,7 @@ r-ubuntu: pre-build
 		-f r-ubuntu.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=VER_BASE=$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--build-arg=CRAN_URL=$(CRAN_URL) \
 		--build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
@@ -127,7 +127,7 @@ julia: pre-build
 		-f julia.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=VER_BASE=$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)
