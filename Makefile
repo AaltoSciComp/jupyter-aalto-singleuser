@@ -97,7 +97,7 @@ standard: pre-build container-builder
 		--load \
 		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
-		--build-arg=VER_STD=$(VER_STD) \
+		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD_CACHE)
@@ -108,13 +108,14 @@ standard: pre-build container-builder
 r-ubuntu: pre-build
 	@! grep -P '\t' -C 1 r-ubuntu.Dockerfile || { echo "ERROR: Tabs in r-ubuntu.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
-		-t ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) \
+		-t $(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) \
 		-f r-ubuntu.Dockerfile \
 		--builder=jupyter \
 		--load \
 		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
 		--build-arg=CRAN_URL=$(CRAN_URL) \
 		--build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT) \
+		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R_CACHE)
@@ -123,11 +124,12 @@ r-ubuntu: pre-build
 julia: pre-build
 	@! grep -P '\t' -C 1 julia.Dockerfile || { echo "ERROR: Tabs in julia.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
-		-t ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) \
+		-t $(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA) \
 		-f julia.Dockerfile \
 		--builder=jupyter \
 		--load \
 		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-julia:$(VER_JULIA) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)

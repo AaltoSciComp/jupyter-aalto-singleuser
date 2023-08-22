@@ -107,9 +107,13 @@ RUN \
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 
 # Save version information within the image
-ARG VER_STD
+ARG IMAGE_VERSION
+ARG BASE_IMAGE
 ARG JUPYTER_SOFTWARE_IMAGE
-RUN echo IMAGE_VERSION=${VER_STD} >> /etc/cs-jupyter-release && \
+RUN \
+    truncate --size 0 /etc/cs-jupyter-release && \
+    echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
+    echo BASE_IMAGE=${BASE_IMAGE} >> /etc/cs-jupyter-release && \
     prefix=$(grep prefix: /opt/environment.yml | cut -d' ' -f2) && \
     echo JUPYTER_SOFTWARE_VERSION=${prefix} >> /etc/cs-jupyter-release
 
