@@ -144,6 +144,7 @@ opencv: pre-build
 		--builder=jupyter \
 		--load \
 		--build-arg=STD_IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
+		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV_CACHE)
