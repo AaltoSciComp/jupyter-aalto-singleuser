@@ -1,5 +1,5 @@
-ARG VER_STD
-FROM aaltoscienceit/notebook-server:${VER_STD}
+ARG STD_IMAGE
+FROM ${STD_IMAGE}
 ENV OPENCV_VERSION 4.1.1
 
 USER root
