@@ -1,20 +1,19 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-## R support
-
 USER root
 
 ENV JULIA_DEPOT_PATH=/opt/julia
 ENV JULIA_PKGDIR=/opt/julia
-ENV JULIA_VERSION=1.8.4
+ENV JULIA_VERSION=1.9.4
+ENV JULIA_HASH=07d20c4c2518833e2265ca0acee15b355463361aa4efdab858dad826cf94325c
 
 # https://julialang.org/downloads/
 # wget -O- https://julialang-s3.julialang.org/bin/linux/x64/1.8/julia-1.8.4-linux-x86_64.tar.gz | sha256sum -
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \
-    wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION} | cut -d. -f 1,2`/julia-${JULIA_VERSION}-linux-x86_64.tar.gz && \
-    echo "f0427a4d7910c47dc7c31f65ba7ecaafedbbc0eceb39c320a37fa33598004fd5 *julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | sha256sum -c - && \
+    wget -q https://julialang-s3.julialang.org/bin/linux/x64/$(echo ${JULIA_VERSION} | cut -d. -f 1,2)/julia-${JULIA_VERSION}-linux-x86_64.tar.gz && \
+    echo "${JULIA_HASH} *julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | sha256sum -c - && \
     tar xzf julia-${JULIA_VERSION}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION} --strip-components=1 && \
     rm /tmp/julia-${JULIA_VERSION}-linux-x86_64.tar.gz
 RUN ln -fs /opt/julia-*/bin/julia /usr/local/bin/julia
@@ -41,12 +40,10 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 #    echo "c.KernelSpecManager.whitelist={'julia-1.6', 'bash'}" >> /etc/jupyter/jupyter_notebook_config.py
 
 RUN \
-    conda install \
+    mamba install \
         pyqt \
         && \
-    conda clean --all --yes && \
-    rm -rf /opt/conda/pkgs/cache/ && \
-    fix-permissions $CONDA_DIR /home/$NB_USER
+    clean-layer.sh
 
 
 #RUN julia -e 'import Pkg; Pkg.update()' && \
