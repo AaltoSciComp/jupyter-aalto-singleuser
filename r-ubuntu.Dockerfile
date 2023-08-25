@@ -369,6 +369,30 @@ RUN \
     clean-layer.sh
 
 # ====================================
+# bayesda2023, RT#24186
+
+ARG QUARTO_HASH=667ea45f963949f8c13b75c63dd30734b7f5f0ec49fd5991c5824a753066fcdd
+ARG QUARTO_VERSION=1.3.450
+RUN \
+    cd /tmp && \
+    wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    echo "${QUARTO_HASH} quarto-${QUARTO_VERSION}-linux-amd64.deb" | sha256sum -c && \
+    dpkg -i quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    rm quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    quarto install tinytex && \
+    clean-layer.sh
+
+ENV CMDSTAN=/coursedata/cmdstan
+RUN \
+    echo "CMDSTAN=${CMDSTAN}" >> /home/${NB_USER}/.Renviron && \
+    fix-permissions /home/${NB_USER}
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libtbb2 \
+          && \
+    clean-layer.sh
+
+# ====================================
 
 # TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
 RUN \
