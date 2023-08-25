@@ -349,6 +349,15 @@ EOF
 #     fix-permissions /usr/local/lib/R/site-library && \
 #     clean-layer.sh
 
+# bayesda2023, RT#24186
+RUN \
+    install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} \
+        ggdist \
+        pacman \
+          && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
 # ====================================
 
 # Set default R compiler to clang to save memory.
