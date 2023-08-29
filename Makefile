@@ -24,7 +24,8 @@ VER_JULIA_CACHE=5.0.16
 VER_R=6.2.0
 VER_R_CACHE=6.2.0
 # OpenCV
-VER_CV=1.8.0
+VER_CV=6.2.1
+VER_CV_CACHE=6.2.1
 
 # Software for the standard image
 BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda
@@ -136,10 +137,19 @@ julia: pre-build
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda env export -n base > environment-yml/$@-$(VER_JULIA).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda list --revisions > conda-history/$@-$(VER_JULIA).yml
 opencv: pre-build
-	@! grep -P '\t' -C 1 opencv.Dockerfile || { echo "ERROR: Tabs in opencv.Dockerfile" ; exit 1 ; }
-	DOCKER_BUILDKIT=1 docker build -t notebook-server-opencv:$(VER_CV) --pull=false . -f opencv.Dockerfile --build-arg=VER_STD=$(VER_STD)
-	docker run --rm notebook-server-opencv:$(VER_CV) conda env export -n base > environment-yml/$@-$(VER_CV).yml
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_CV) conda list --revisions > conda-history/$@-$(VER_CV).yml
+	@! grep -P '\t' -C 1 $@.Dockerfile || { echo "ERROR: Tabs in $@.Dockerfile" ; exit 1 ; }
+	docker buildx build . \
+		-t $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) \
+		-f $@.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=STD_IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
+		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV_CACHE)
+	docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda env export -n base > environment-yml/$@-$(VER_CV).yml
+	docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda list --revisions > conda-history/$@-$(VER_CV).yml
 
 update-environment:
 	cp $(ENVIRONMENT_FILE) environment.yml
@@ -148,6 +158,8 @@ update-environment:
 pre-test:
 	$(eval TEST_DIR := $(shell mktemp -d /tmp/pytest.XXXXXX))
 	rsync --chmod=Do+x,+r -a --delete tests/ $(TEST_DIR)
+# rsync follows umask, even when explicitly setting permissions
+	chmod -R o=rX $(TEST_DIR)
 
 test-standard: pre-test
 	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) pytest -o cache_dir=/tmp/pytestcache /tests/python/${TESTFILE} ${TESTARGS}
@@ -163,6 +175,10 @@ test-standard-full: test-standard pre-test
 
 test-r-ubuntu: r-ubuntu pre-test
 	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript /tests/r/test_bayes.r
+	rm -r $(TEST_DIR)
+
+test-opencv: pre-test
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) pytest -o cache_dir=/tmp/pytestcache /tests/python/test_opencv.py ${TESTARGS}
 	rm -r $(TEST_DIR)
 
 # Because the docker-container driver is isolated from the system docker and

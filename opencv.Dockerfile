@@ -1,38 +1,33 @@
-ARG VER_STD
-FROM aaltoscienceit/notebook-server:${VER_STD}
-ENV OPENCV_VERSION 4.1.1
+ARG STD_IMAGE
 
-USER root
+FROM ubuntu:jammy AS builder
 
 # Installation steps from
 # https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential \
+        make \
+        # Enable HTTPS for wget
+        ca-certificates \
+        # Dependencies from the OpenCV documentation
         cmake \
-        git \
-        libgtk2.0-dev \
-        pkg-config \
-        libavcodec-dev \
-        libavformat-dev \
-        libswscale-dev \
-        && \
-    clean-layer.sh
+        g++ \
+        wget \
+        unzip
+
+ARG OPENCV_VERSION=4.8.0
 
 RUN \
-    # fontconfig causes problems during the installation, see
-    # https://github.com/opencv/opencv/issues/12625#issuecomment-515152948
-    conda uninstall fontconfig && \
     cd /usr/local/src && \
-    git clone https://github.com/opencv/opencv.git && \
-    git clone https://github.com/opencv/opencv_contrib.git && \
-    cd opencv && \
-    mkdir build && cd build && \
-    # https://stackoverflow.com/a/54176727
+    wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
+    wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip && \
+    unzip opencv.zip && \
+    unzip opencv_contrib.zip && \
+    mkdir -p build && cd build && \
     cmake \
         -D CMAKE_BUILD_TYPE=RELEASE \
-        -D CMAKE_INSTALL_PREFIX=/usr/local \
+        -D CMAKE_INSTALL_PREFIX=/opt/opencv \
         -D INSTALL_C_EXAMPLES=OFF \
         -D INSTALL_PYTHON_EXAMPLES=ON \
         -D BUILD_EXAMPLES=ON \
@@ -42,12 +37,34 @@ RUN \
         -D PYTHON3_NUMPY_INCLUDE_DIRS=$(python3 -c "import numpy; print(numpy.get_include())") \
         -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
         -D OPENCV_ENABLE_NONFREE=ON \
-        -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
-        .. && \
-    make -j$(nproc) && \
+        -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib-${OPENCV_VERSION}/modules \
+        ../opencv-${OPENCV_VERSION} && \
+    cmake --build . -j$(nproc) && \
     make install && \
     cd /usr/local/src && rm -r /usr/local/src/*
 
-RUN conda install --quiet --yes pyflann line_profiler
+# =======================================
+
+FROM ${STD_IMAGE}
+
+USER root
+
+# FIXME: this installation method doesn't get picked up by python. Should
+# probably revert to the single-stage build
+COPY --from=builder /opt/opencv /usr/local
+
+RUN \
+    /opt/conda/bin/mamba install -y --freeze-installed \
+        pyflann \
+        line_profiler && \
+    clean-layer.sh
+
+# Save version information within the image
+ARG IMAGE_VERSION
+ARG STD_IMAGE
+RUN \
+    truncate --size 0 /etc/cs-jupyter-release && \
+    echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
+    echo STD_IMAGE=${STD_IMAGE} >> /etc/cs-jupyter-release
 
 USER $NB_UID
