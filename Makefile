@@ -158,6 +158,8 @@ update-environment:
 pre-test:
 	$(eval TEST_DIR := $(shell mktemp -d /tmp/pytest.XXXXXX))
 	rsync --chmod=Do+x,+r -a --delete tests/ $(TEST_DIR)
+# rsync follows umask, even when explicitly setting permissions
+	chmod -R o=rX $(TEST_DIR)
 
 test-standard: pre-test
 	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) pytest -o cache_dir=/tmp/pytestcache /tests/python/${TESTFILE} ${TESTARGS}
@@ -173,6 +175,10 @@ test-standard-full: test-standard pre-test
 
 test-r-ubuntu: r-ubuntu pre-test
 	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript /tests/r/test_bayes.r
+	rm -r $(TEST_DIR)
+
+test-opencv: pre-test
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) pytest -o cache_dir=/tmp/pytestcache /tests/python/test_opencv.py ${TESTARGS}
 	rm -r $(TEST_DIR)
 
 # Because the docker-container driver is isolated from the system docker and
