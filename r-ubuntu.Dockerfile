@@ -360,6 +360,13 @@ RUN \
 
 # ====================================
 
+# TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
+RUN \
+    /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
+    clean-layer.sh
+
+# ====================================
+
 # Set default R compiler to clang to save memory.
 RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
     echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
