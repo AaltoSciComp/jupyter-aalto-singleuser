@@ -100,6 +100,16 @@ RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
     clean-layer.sh
 
+# dsfbi2023, RT#24227
+RUN \
+    /opt/software/bin/mamba install -y --freeze-installed \
+        scikit-optimize \
+        lightgbm \
+        catboost \
+        missingno \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
