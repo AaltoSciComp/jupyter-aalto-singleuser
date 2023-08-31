@@ -1,22 +1,20 @@
 ARG STD_IMAGE
+FROM ${STD_IMAGE}
+ENV OPENCV_VERSION 4.8.0
 
-FROM ubuntu:jammy AS builder
+USER root
 
 # Installation steps from
 # https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        make \
-        # Enable HTTPS for wget
-        ca-certificates \
-        # Dependencies from the OpenCV documentation
         cmake \
         g++ \
         wget \
-        unzip
-
-ARG OPENCV_VERSION=4.8.0
+        unzip \
+        && \
+    clean-layer.sh
 
 RUN \
     cd /usr/local/src && \
@@ -43,21 +41,7 @@ RUN \
     make install && \
     cd /usr/local/src && rm -r /usr/local/src/*
 
-# =======================================
-
-FROM ${STD_IMAGE}
-
-USER root
-
-# FIXME: this installation method doesn't get picked up by python. Should
-# probably revert to the single-stage build
-COPY --from=builder /opt/opencv /usr/local
-
-RUN \
-    /opt/conda/bin/mamba install -y --freeze-installed \
-        pyflann \
-        line_profiler && \
-    clean-layer.sh
+RUN conda install --quiet --yes pyflann line_profiler
 
 # Save version information within the image
 ARG IMAGE_VERSION
