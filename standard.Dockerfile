@@ -110,6 +110,17 @@ RUN \
         && \
     clean-layer.sh
 
+# compnet2023, RT#24233
+RUN \
+    /opt/software/bin/mamba uninstall -y \
+        # Sage requires networkx<3, will be split into a separate image
+        sage \
+        && \
+    /opt/software/bin/mamba install -y \
+        'networkx>=3' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
