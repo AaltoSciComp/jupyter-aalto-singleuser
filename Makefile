@@ -24,8 +24,8 @@ VER_JULIA_CACHE=5.0.16
 VER_R=6.2.0
 VER_R_CACHE=6.2.0
 # OpenCV
-VER_CV=6.2.1
-VER_CV_CACHE=6.2.1
+VER_CV=6.1.5
+VER_CV_CACHE=6.1.5
 
 # Software for the standard image
 BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda
