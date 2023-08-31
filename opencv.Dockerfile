@@ -1,6 +1,5 @@
 ARG STD_IMAGE
 FROM ${STD_IMAGE}
-ENV OPENCV_VERSION 4.8.0
 
 USER root
 
@@ -9,12 +8,18 @@ USER root
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends \
+        make \
+        # Enable HTTPS for wget
+        ca-certificates \
+        # Dependencies from the OpenCV documentation
         cmake \
         g++ \
         wget \
         unzip \
         && \
     clean-layer.sh
+
+ARG OPENCV_VERSION=4.8.0
 
 RUN \
     cd /usr/local/src && \
