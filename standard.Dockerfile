@@ -153,6 +153,10 @@ RUN \
         # rl2023, RT#24373
         gymnasium[mujoco,box2d] \
         && \
+    pip uninstall -y \
+        # Requires registering to an external service
+        wandb \
+        && \
     clean-layer.sh
 
 # ========================================
