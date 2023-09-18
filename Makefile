@@ -42,9 +42,9 @@ ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSIO
 TEST_MEM_LIMIT="--memory=2G"
 R_INSTALL_JOB_COUNT=10
 
-# For private registry, run: `make REGISTRY=registry.cs.aalto.fi/ GROUP=jupyter [BASE_REG_GROUP=aaltoscienceit] [..]`
-REGISTRY=
-GROUP=aaltoscienceit
+# For dockerhub, run: `make REGISTRY= GROUP=aaltoscienceit [..]`
+REGISTRY=harbor.cs.aalto.fi/
+GROUP=jupyter
 
 # Optional hostname ("registry") and namespace ("group") for the base image.
 # When left empty, defaults to the same values as the standard image.
