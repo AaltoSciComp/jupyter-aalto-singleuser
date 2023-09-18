@@ -14,14 +14,17 @@ VER_BASE_CACHE=6.2
 
 # Python
 VER_STD=6.1.2-rl2023
+VER_STD_BASE=6.1
 # See the comment for VER_BASE_CACHE
 VER_STD_CACHE=6.1.2
 
 # Julia
 VER_JULIA=5.0.16-jh401
+VER_JULIA_BASE=5.0
 VER_JULIA_CACHE=5.0.16
 # R
 VER_R=6.2.0
+VER_R_BASE=6.2
 VER_R_CACHE=6.2.0
 # OpenCV
 VER_CV=6.2.1
@@ -96,7 +99,7 @@ standard: pre-build container-builder
 		-f standard.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_STD_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
@@ -113,7 +116,7 @@ r-ubuntu: pre-build
 		-f r-ubuntu.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_R_BASE) \
 		--build-arg=CRAN_URL=$(CRAN_URL) \
 		--build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) \
@@ -129,7 +132,7 @@ julia: pre-build
 		-f julia.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_JULIA_BASE) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-julia:$(VER_JULIA) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
