@@ -144,6 +144,17 @@ RUN \
         && \
     clean-layer.sh
 
+RUN \
+    apt-get update && apt-get install -y --no-install-recommends \
+        # Required to build box2d
+        swig \
+        && \
+    pip install --no-cache-dir \
+        # rl2023, RT#24373
+        gymnasium[mujoco,box2d] \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
