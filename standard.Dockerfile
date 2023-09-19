@@ -129,6 +129,13 @@ RUN \
         && \
     clean-layer.sh
 
+# ml2023, RT#24336
+RUN \
+    /opt/software/bin/mamba install -y \
+        gym \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
