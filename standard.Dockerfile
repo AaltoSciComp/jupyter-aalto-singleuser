@@ -132,7 +132,7 @@ RUN \
 # ml2023, RT#24336
 RUN \
     /opt/software/bin/mamba install -y \
-        gym \
+        'gym==0.21.0' \
         && \
     clean-layer.sh
 
