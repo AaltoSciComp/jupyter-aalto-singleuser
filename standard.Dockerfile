@@ -129,6 +129,13 @@ RUN \
         && \
     clean-layer.sh
 
+# dsfbi2023, RT#24386
+RUN \
+    /opt/software/bin/mamba install -y \
+        optuna \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
