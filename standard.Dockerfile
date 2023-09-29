@@ -136,10 +136,12 @@ RUN \
         && \
     clean-layer.sh
 
-# https://nvd.nist.gov/vuln/detail/CVE-2023-4863
 RUN \
     /opt/software/bin/mamba install -y \
+        # https://nvd.nist.gov/vuln/detail/CVE-2023-4863
         'libwebp>=1.3.2' \
+        # compnet2023, RT#24433
+        python-infomap \
         && \
     clean-layer.sh
 
