@@ -136,6 +136,13 @@ RUN \
         && \
     clean-layer.sh
 
+# https://nvd.nist.gov/vuln/detail/CVE-2023-4863
+RUN \
+    /opt/software/bin/mamba install -y \
+        'libwebp>=1.3.2' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
