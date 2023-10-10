@@ -13,19 +13,22 @@ VER_BASE=6.2
 VER_BASE_CACHE=6.2
 
 # Python
-VER_STD=6.1.4
+VER_STD=6.1.8
+VER_STD_BASE=6.1
 # See the comment for VER_BASE_CACHE
-VER_STD_CACHE=6.1.4
+VER_STD_CACHE=6.1.7
 
 # Julia
 VER_JULIA=5.0.16-jh401
+VER_JULIA_BASE=5.0
 VER_JULIA_CACHE=5.0.16
 # R
 VER_R=6.2.0-bayesda2023-2
+VER_R_BASE=6.2
 VER_R_CACHE=6.2.0
 # OpenCV
-VER_CV=6.2.1
-VER_CV_CACHE=6.2.1
+VER_CV=6.1.5
+VER_CV_CACHE=6.1.5
 
 # Software for the standard image
 BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda
@@ -39,9 +42,9 @@ ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSIO
 TEST_MEM_LIMIT="--memory=2G"
 R_INSTALL_JOB_COUNT=10
 
-# For private registry, run: `make REGISTRY=registry.cs.aalto.fi/ GROUP=jupyter [BASE_REG_GROUP=aaltoscienceit] [..]`
-REGISTRY=
-GROUP=aaltoscienceit
+# For dockerhub, run: `make REGISTRY= GROUP=aaltoscienceit [..]`
+REGISTRY=harbor.cs.aalto.fi/
+GROUP=jupyter
 
 # Optional hostname ("registry") and namespace ("group") for the base image.
 # When left empty, defaults to the same values as the standard image.
@@ -96,7 +99,7 @@ standard: pre-build container-builder
 		-f standard.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_STD_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
@@ -113,7 +116,7 @@ r-ubuntu: pre-build
 		-f r-ubuntu.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_R_BASE) \
 		--build-arg=CRAN_URL=$(CRAN_URL) \
 		--build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) \
@@ -129,7 +132,7 @@ julia: pre-build
 		-f julia.Dockerfile \
 		--builder=jupyter \
 		--load \
-		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_JULIA_BASE) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-julia:$(VER_JULIA) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
@@ -173,8 +176,8 @@ test-standard-full: test-standard pre-test
 	@echo
 	@echo "All tests passed..."
 
-test-r-ubuntu: r-ubuntu pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript /tests/r/test_bayes.r
+test-r-ubuntu: pre-test
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript -e "source('/tests/r/test_all.r')"
 	rm -r $(TEST_DIR)
 
 test-opencv: pre-test

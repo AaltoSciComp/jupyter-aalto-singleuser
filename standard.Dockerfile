@@ -121,6 +121,30 @@ RUN \
         && \
     clean-layer.sh
 
+# ml2023, RT#24336
+RUN \
+    /opt/software/bin/mamba install -y \
+        gymnasium \
+        tabulate \
+        && \
+    clean-layer.sh
+
+# dsfbi2023, RT#24386
+RUN \
+    /opt/software/bin/mamba install -y \
+        optuna \
+        && \
+    clean-layer.sh
+
+RUN \
+    /opt/software/bin/mamba install -y \
+        # https://nvd.nist.gov/vuln/detail/CVE-2023-4863
+        'libwebp>=1.3.2' \
+        # compnet2023, RT#24433
+        python-infomap \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so

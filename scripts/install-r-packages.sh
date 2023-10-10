@@ -4,6 +4,7 @@ set -euo pipefail
 _url="https://cran.r-project.org"
 _install_source=default
 _jobs=1
+_force=0
 
 PACKAGES=()
 
@@ -30,6 +31,10 @@ while [[ $# -gt 0 ]]; do
       fi
       _jobs="$2"
       shift
+      shift
+      ;;
+    -f|--force|-U|--update)
+      _force=1
       shift
       ;;
     *)
@@ -67,7 +72,7 @@ fi
 # https://stackoverflow.com/a/52638148
 Rscript -e " \
   for (pkg in commandArgs(TRUE)) { \
-    if (!require(pkg, character.only = TRUE, quietly = TRUE)) { \
+    if ($_force || !require(pkg, character.only = TRUE, quietly = TRUE)) { \
       $_install_cmd(pkg$_opts); \
       library(pkg, character.only = TRUE) \
     } \
