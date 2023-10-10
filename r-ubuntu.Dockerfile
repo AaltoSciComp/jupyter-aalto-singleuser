@@ -411,6 +411,19 @@ RUN \
 
 # ====================================
 
+# TODO: Remove when rebuilding
+COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
+
+# bayesda2023, RT#24513
+RUN \
+    install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} --update \
+        rstan \
+          && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
+# ====================================
+
 # Set default R compiler to clang to save memory.
 RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
     echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
