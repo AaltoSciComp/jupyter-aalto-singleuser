@@ -176,8 +176,8 @@ test-standard-full: test-standard pre-test
 	@echo
 	@echo "All tests passed..."
 
-test-r-ubuntu: r-ubuntu pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript /tests/r/test_bayes.r
+test-r-ubuntu: pre-test
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript -e "source('/tests/r/test_all.r')"
 	rm -r $(TEST_DIR)
 
 test-opencv: pre-test
