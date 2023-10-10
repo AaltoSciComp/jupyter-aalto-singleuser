@@ -53,7 +53,7 @@ BASE_REG_GROUP=${REGISTRY}${GROUP}
 .PHONY: default
 
 default:
-	echo "Please specify a command to run"
+	@echo "Please specify a command to run"
 
 full-rebuild: base standard test-standard
 
@@ -187,25 +187,25 @@ test-opencv: pre-test
 # Because the docker-container driver is isolated from the system docker and
 # can't access the default image store, the base image has to be pushed into a
 # registry before building other images
-push-base: base
+push-base:
 	docker push $(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
 push-standard:
 	docker push ${REGISTRY}${GROUP}/notebook-server:$(VER_STD)
-push-r-ubuntu: r-ubuntu
+push-r-ubuntu:
 	docker push ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R)
-push-julia: julia
+push-julia:
 #	time docker save ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA} | ssh manager ssh jupyter-k8s-node4.cs.aalto.fi 'docker load'
 	docker push ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA)
-push-dev: check-khost standard
+push-dev: check-khost
 	## NOTE: Saving and loading the whole image takes a long time. Pushing
 	##       partial changes to a DockerHub repo using `push-devhub` is faster
 	# time docker save ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_STD} | ssh ${KHOST} ssh jupyter-k8s-node4.cs.aalto.fi 'docker load'
 	time docker save ${REGISTRY}${GROUP}/notebook-server:${VER_STD} | ssh ${KHOST} ssh k8s-node4.cs.aalto.fi 'docker load'
-push-devhub: check-khost check-hubrepo standard
+push-devhub: check-khost check-hubrepo
 	docker tag ${REGISTRY}${GROUP}/notebook-server:${VER_STD} ${HUBREPO}/notebook-server:${VER_STD}
 	docker push ${HUBREPO}/notebook-server:${VER_STD}
 	ssh ${KHOST} ssh k8s-node4.cs.aalto.fi "docker pull ${HUBREPO}/notebook-server:${VER_STD}"
-push-devhub-base: check-khost check-hubrepo base
+push-devhub-base: check-khost check-hubrepo
 	docker tag ${BASE_REG_GROUP}/notebook-server-base:${VER_BASE} ${HUBREPO}/notebook-server-base:${VER_BASE}
 	docker push ${HUBREPO}/notebook-server-base:${VER_BASE}
 	ssh ${KHOST} ssh k8s-node4.cs.aalto.fi "docker pull ${HUBREPO}/notebook-server-base:${VER_BASE}"
