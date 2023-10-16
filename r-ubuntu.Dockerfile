@@ -422,6 +422,15 @@ RUN \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
 
+# bayesda2023, RT#24552
+# Installing from GitHub because "there are some bugs in the CRAN version
+# causing problems for students"
+RUN \
+    Rscript -e 'remotes::install_github("stan-dev/posterior")' \
+          && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
 # ====================================
 
 # Set default R compiler to clang to save memory.
