@@ -6,3 +6,4 @@ k-dockerhub.sh
 conda
 .docker
 conda-history
+environment-yml
