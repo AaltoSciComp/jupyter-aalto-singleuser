@@ -50,6 +50,8 @@ GROUP=jupyter
 # When left empty, defaults to the same values as the standard image.
 BASE_REG_GROUP=${REGISTRY}${GROUP}
 
+$(eval GIT_DESCRIBE := $(shell git describe))
+
 .PHONY: default
 
 default:
@@ -87,6 +89,7 @@ base: pre-build container-builder
 		--load \
 		--build-arg=UPSTREAM_MINIMAL_NOTEBOOK_VER=$(UPSTREAM_MINIMAL_NOTEBOOK_VER) \
 		--build-arg=IMAGE_VERSION=$(BASE_REG_GROUP)/notebook-server-base:$(VER_BASE) \
+		--build-arg=GIT_DESCRIBE=$(GIT_DESCRIBE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:base-$(VER_BASE_CACHE)
@@ -102,6 +105,7 @@ standard: pre-build container-builder
 		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_STD_BASE) \
 		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
+		--build-arg=GIT_DESCRIBE=$(GIT_DESCRIBE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:standard-$(VER_STD_CACHE)
@@ -120,6 +124,7 @@ r-ubuntu: pre-build
 		--build-arg=CRAN_URL=$(CRAN_URL) \
 		--build-arg=INSTALL_JOB_COUNT=$(R_INSTALL_JOB_COUNT) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) \
+		--build-arg=GIT_DESCRIBE=$(GIT_DESCRIBE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R_CACHE)
@@ -134,6 +139,7 @@ julia: pre-build
 		--load \
 		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_JULIA_BASE) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-r-julia:$(VER_JULIA) \
+		--build-arg=GIT_DESCRIBE=$(GIT_DESCRIBE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)
@@ -148,6 +154,7 @@ opencv: pre-build
 		--load \
 		--build-arg=STD_IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) \
 		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) \
+		--build-arg=GIT_DESCRIBE=$(GIT_DESCRIBE) \
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV_CACHE)

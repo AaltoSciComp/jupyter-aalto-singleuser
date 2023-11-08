@@ -160,6 +160,8 @@ RUN \
     echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
     echo BASE_IMAGE=${BASE_IMAGE} >> /etc/cs-jupyter-release && \
     prefix=$(grep prefix: /opt/environment.yml | cut -d' ' -f2) && \
-    echo JUPYTER_SOFTWARE_VERSION=${prefix} >> /etc/cs-jupyter-release
+    echo JUPYTER_SOFTWARE_VERSION=${prefix} >> /etc/cs-jupyter-release && \
+    echo GIT_DESCRIBE=${GIT_DESCRIBE} >> /etc/cs-jupyter-release
+
 
 USER $NB_UID

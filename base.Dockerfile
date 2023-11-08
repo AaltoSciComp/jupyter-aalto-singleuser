@@ -137,9 +137,11 @@ COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 # Save version information within the image
 ARG IMAGE_VERSION
 ARG UPSTREAM_MINIMAL_NOTEBOOK_VER
+ARG GIT_DESCRIBE
 RUN \
     truncate --size 0 /etc/cs-jupyter-release && \
     echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
-    echo UPSTREAM_MINIMAL_NOTEBOOK_VER=${UPSTREAM_MINIMAL_NOTEBOOK_VER} >> /etc/cs-jupyter-release
+    echo UPSTREAM_MINIMAL_NOTEBOOK_VER=${UPSTREAM_MINIMAL_NOTEBOOK_VER} >> /etc/cs-jupyter-release && \
+    echo GIT_DESCRIBE=${GIT_DESCRIBE} >> /etc/cs-jupyter-release
 
 USER $NB_UID

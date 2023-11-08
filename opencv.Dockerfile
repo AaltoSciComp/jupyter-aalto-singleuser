@@ -54,6 +54,8 @@ ARG STD_IMAGE
 RUN \
     truncate --size 0 /etc/cs-jupyter-release && \
     echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
-    echo STD_IMAGE=${STD_IMAGE} >> /etc/cs-jupyter-release
+    echo STD_IMAGE=${STD_IMAGE} >> /etc/cs-jupyter-release && \
+    echo GIT_DESCRIBE=${GIT_DESCRIBE} >> /etc/cs-jupyter-release
+
 
 USER $NB_UID

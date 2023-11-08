@@ -384,6 +384,8 @@ ARG BASE_IMAGE
 RUN \
     truncate --size 0 /etc/cs-jupyter-release && \
     echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
-    echo BASE_IMAGE=${BASE_IMAGE} >> /etc/cs-jupyter-release
+    echo BASE_IMAGE=${BASE_IMAGE} >> /etc/cs-jupyter-release && \
+    echo GIT_DESCRIBE=${GIT_DESCRIBE} >> /etc/cs-jupyter-release
+
 
 USER $NB_UID
