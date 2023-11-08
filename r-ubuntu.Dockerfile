@@ -367,6 +367,16 @@ RUN \
 
 # ====================================
 
+# RT#24664
+RUN \
+    install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} \
+        car \
+          && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
+# ====================================
+
 # Set default R compiler to clang to save memory.
 RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
     echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
