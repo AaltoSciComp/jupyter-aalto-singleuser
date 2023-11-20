@@ -5,7 +5,6 @@ def test_modules():
     import igraph
     import imblearn
     import keras
-    import nbgitpuller
     #import nbstripout        # not importable in tests/notebooks
     import networkx
     import nose
