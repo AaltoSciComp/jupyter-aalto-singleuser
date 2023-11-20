@@ -171,8 +171,12 @@ pre-test:
 # rsync follows umask, even when explicitly setting permissions
 	chmod -R o=rX $(TEST_DIR)
 
+test-standard-conda: pre-test
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) /opt/conda/bin/pytest -o cache_dir=/tmp/pytestcache /tests/python_conda/${TESTFILE} ${TESTARGS}
+	rm -r $(TEST_DIR)
+
 test-standard: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) pytest -o cache_dir=/tmp/pytestcache /tests/python/${TESTFILE} ${TESTARGS}
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) /opt/software/bin/pytest -o cache_dir=/tmp/pytestcache /tests/python/${TESTFILE} ${TESTARGS}
 	rm -r $(TEST_DIR)
 #	CC="clang" CXX="clang++" jupyter nbconvert --exec --ExecutePreprocessor.timeout=300 pystan_demo.ipynb --stdout
 test-standard-full: test-standard pre-test
