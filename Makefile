@@ -188,7 +188,7 @@ test-r-ubuntu: pre-test
 	rm -r $(TEST_DIR)
 
 test-opencv: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) pytest -o cache_dir=/tmp/pytestcache /tests/python/test_opencv.py ${TESTARGS}
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) pytest -o cache_dir=/tmp/pytestcache /tests/python_opencv/test_opencv.py ${TESTARGS}
 	rm -r $(TEST_DIR)
 
 # Because the docker-container driver is isolated from the system docker and
