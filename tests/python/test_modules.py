@@ -10,7 +10,6 @@ def test_modules():
     import nose
     #import pandas_datareader # currently broken
     import plotly
-    import pystan
     import tables
     import sklearn
     import tensorflow
@@ -30,7 +29,7 @@ def test_modules():
     import folium
 
     # Bayes course
-    import pystan
+    import stan
 
     # DSFB
     import pydotplus
