@@ -1,5 +1,6 @@
 
 def test_modules():
+    from packaging import version
     # Generic
     import igraph
     import imblearn
@@ -13,10 +14,13 @@ def test_modules():
     import pystan
     import tables
     import sklearn
-    import tensorflow ; assert tensorflow.__version__ >= '2.0'
+    import tensorflow
+    assert version.parse(tensorflow.__version__) >= version.parse('2.0')
     import tensorflow_hub
-    import torch ; assert torch.__version__ >= '1.3.0'
-    import torchvision ; assert torchvision.__version__ >= '0.2.1'
+    import torch
+    assert version.parse(torch.__version__) >= version.parse('1.3.0')
+    import torchvision
+    assert version.parse(torchvision.__version__) >= version.parse('0.2.1')
 
     # Misc requested courses
     #import gpflow
