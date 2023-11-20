@@ -9,9 +9,9 @@
 
 def test_bayes_new():
     import numpy as np
-    import pystan
-    sm = pystan.StanModel(model_code="parameters {real theta;} model {theta ~ normal(0,1);}")
-    #fit = pystan.stan(model_code="parameters {real theta;} model {theta ~ normal(0,1);}")
+    import stan
+    sm = stan.build(program_code="parameters {real theta;} model {theta ~ normal(0,1);}")
+    #fit = stan.stan(model_code="parameters {real theta;} model {theta ~ normal(0,1);}")
     fit = sm.sampling()
     samples = fit.extract(permuted=True)
     assert np.mean(samples['theta']) < 1
