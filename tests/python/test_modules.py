@@ -42,7 +42,7 @@ def test_modules():
     import cvxpy
 
     # Intro to AI
-    import bcolz
+    # import bcolz  # now unmaintained, python <3.7
     import tqdm
 
     # Introduction to Quantum Technologies, Matti Raasakka, RT#14866
@@ -50,7 +50,7 @@ def test_modules():
 
     # intcompmedia
     import pydub
-    import cma
+    # import cma  # removed in 2021
 
     # ai2020
     import ortools
