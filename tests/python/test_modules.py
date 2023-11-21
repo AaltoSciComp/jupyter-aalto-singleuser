@@ -19,6 +19,8 @@ def test_modules():
     assert version.parse(torch.__version__) >= version.parse('1.3.0')
     import torchvision
     assert version.parse(torchvision.__version__) >= version.parse('0.2.1')
+    import torchtext
+    assert version.parse(torchtext.__version__) >= version.parse('0.15.2')
 
     # Misc requested courses
     #import gpflow
