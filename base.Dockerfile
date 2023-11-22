@@ -130,6 +130,9 @@ RUN \
     jupyter serverextension disable jupyter_lsp && \
     clean-layer.sh
 
+RUN \
+    jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
+
 # Hooks and scripts are also copied at the end of other Dockerfiles because
 # they might update frequently
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
