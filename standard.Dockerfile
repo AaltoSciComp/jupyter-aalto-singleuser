@@ -65,11 +65,6 @@ RUN \
 
 # ========================================
 
-RUN \
-    # Already installed to /opt/conda, but needs to also exist in /opt/software
-    /opt/software/bin/python -m bash_kernel.install --sys-prefix && \
-    clean-layer.sh
-
 #
 # TODO: Last-added packages, move to builder when doing a full rebuild
 #
@@ -98,51 +93,6 @@ RUN \
 # TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
 RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
-    clean-layer.sh
-
-# dsfbi2023, RT#24227
-RUN \
-    /opt/software/bin/mamba install -y --freeze-installed \
-        scikit-optimize \
-        lightgbm \
-        catboost \
-        missingno \
-        && \
-    clean-layer.sh
-
-# compnet2023, RT#24233
-RUN \
-    /opt/software/bin/mamba uninstall -y \
-        # Sage requires networkx<3, will be split into a separate image
-        sage \
-        && \
-    /opt/software/bin/mamba install -y \
-        'networkx>=3' \
-        && \
-    clean-layer.sh
-
-# ml2023, RT#24336
-RUN \
-    /opt/software/bin/mamba install -y \
-        gymnasium \
-        tabulate \
-        && \
-    clean-layer.sh
-
-# dsfbi2023, RT#24386
-RUN \
-    /opt/software/bin/mamba install -y \
-        optuna \
-        && \
-    clean-layer.sh
-
-RUN \
-    /opt/software/bin/mamba install -y \
-        # https://nvd.nist.gov/vuln/detail/CVE-2023-4863
-        'libwebp>=1.3.2' \
-        # compnet2023, RT#24433
-        python-infomap \
-        && \
     clean-layer.sh
 
 RUN \
