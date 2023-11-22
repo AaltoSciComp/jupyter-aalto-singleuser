@@ -19,8 +19,8 @@ RUN \
     # The software package that's imported as a tar includes an incorrect
     # condarc file, using a modified version of the jupyter default instead
     echo -n > /opt/software/.condarc && \
+    /opt/software/bin/conda config --system --append channels pytorch && \
     /opt/software/bin/conda config --system --append channels conda-forge && \
-    /opt/software/bin/conda config --system --append channels defaults && \
     /opt/software/bin/conda config --system --set auto_update_conda false && \
     /opt/software/bin/conda config --system --set show_channel_urls true && \
     /opt/software/bin/conda config --system --set channel_priority flexible && \
