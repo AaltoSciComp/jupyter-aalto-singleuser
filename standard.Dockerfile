@@ -86,14 +86,14 @@ RUN \
 #         && \
 #     clean-layer.sh
 
-# Install/update nbgrader
-RUN \
-    # Use the full path to pip to be more explicit about which environment
-    # we're installing to
-    /opt/conda/bin/pip uninstall nbgrader -y && \
-    /opt/conda/bin/pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
-    clean-layer.sh
+# Uncomment when nbgrader needs to be updated
+# RUN \
+#     # Use the full path to pip to be more explicit about which environment
+#     # we're installing to
+#     /opt/conda/bin/pip uninstall nbgrader -y && \
+#     /opt/conda/bin/pip install --no-cache-dir \
+#         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
+#     clean-layer.sh
 
 # TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
 RUN \
