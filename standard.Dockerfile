@@ -73,10 +73,10 @@ RUN \
 #     apt-get update && apt-get install -y --no-install-recommends \
 #         packagename \
 #         && \
-#     /opt/software/bin/mamba install -y --freeze-installed \
+#     /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
 #         packagename \
 #         && \
-#     pip install --no-cache-dir \
+#     /opt/software/bin/pip install --no-cache-dir \
 #         packagename \
 #         && \
 #     clean-layer.sh
@@ -90,7 +90,7 @@ RUN \
 #         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
 #     clean-layer.sh
 
-# TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
+# TODO: Remove this when upgrading base to jupyterlab>=4 and jupyter_server>=2
 RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
     clean-layer.sh
