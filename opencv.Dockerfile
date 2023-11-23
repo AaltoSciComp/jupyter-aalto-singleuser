@@ -51,6 +51,7 @@ RUN conda install --quiet --yes pyflann line_profiler
 # Save version information within the image
 ARG IMAGE_VERSION
 ARG STD_IMAGE
+ARG GIT_DESCRIBE
 RUN \
     truncate --size 0 /etc/cs-jupyter-release && \
     echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \

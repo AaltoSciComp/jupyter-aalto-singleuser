@@ -391,6 +391,7 @@ COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 # Save version information within the image
 ARG IMAGE_VERSION
 ARG BASE_IMAGE
+ARG GIT_DESCRIBE
 RUN \
     truncate --size 0 /etc/cs-jupyter-release && \
     echo IMAGE_VERSION=${IMAGE_VERSION} >> /etc/cs-jupyter-release && \
