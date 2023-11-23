@@ -81,6 +81,15 @@ RUN \
 #         && \
 #     clean-layer.sh
 
+# This is needed by `make test-standard`. Should figure out if it's more
+# helpful or confusing for the users to have this in PATH instead of
+# /opt/conda/bin/pytest
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        pytest \
+        && \
+    clean-layer.sh
+
 # Uncomment when nbgrader needs to be updated
 # RUN \
 #     # Use the full path to pip to be more explicit about which environment
