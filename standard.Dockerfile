@@ -104,9 +104,6 @@ RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
     clean-layer.sh
 
-RUN \
-    jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
-
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
