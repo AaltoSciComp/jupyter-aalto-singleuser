@@ -81,9 +81,7 @@ RUN \
 #         && \
 #     clean-layer.sh
 
-# This is needed by `make test-standard`. Should figure out if it's more
-# helpful or confusing for the users to have this in PATH instead of
-# /opt/conda/bin/pytest
+# This is needed by `make test-standard`, can also be useful for users
 RUN \
     /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
         pytest \
@@ -102,6 +100,14 @@ RUN \
 # TODO: Remove this when upgrading base to jupyterlab>=4 and jupyter_server>=2
 RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
+    clean-layer.sh
+
+# This is currently already installed in the base image, but is required here
+# as well, so that it's accessible when running pytest in /opt/software.
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        nbval \
+        && \
     clean-layer.sh
 
 # ========================================
