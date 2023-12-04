@@ -88,6 +88,13 @@ RUN \
         && \
     clean-layer.sh
 
+# koit2024, RT#24848
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        torchaudio \
+        && \
+    clean-layer.sh
+
 # Uncomment when nbgrader needs to be updated
 # RUN \
 #     # Use the full path to pip to be more explicit about which environment
