@@ -53,6 +53,11 @@ RUN \
 #    fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter && \
 #    echo "done"
 
+RUN \
+    /opt/conda/bin/pip install --no-cache-dir \
+        'jupyterhub>=4.0.1' && \
+    clean-layer.sh
+
 
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
