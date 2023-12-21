@@ -59,6 +59,15 @@ RUN \
     clean-layer.sh
 
 
+# linopt2024, RT#24964
+RUN julia -e 'import Pkg; Pkg.update()' && \
+    julia -e "using Pkg; pkg\"add https://github.com/gamma-opt/JuMPModelPlotting\"; pkg\"precompile\"" && \
+    echo "Done compiling..." && \
+    rm -rf $HOME/.local && \
+    fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter && \
+    echo "done"
+
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
