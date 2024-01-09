@@ -56,3 +56,9 @@ def test_modules():
 
     # ai2020
     import ortools
+
+    # mlca2024
+    import openeo
+    import imgaug
+    import ipyleaflet
+    import fusets

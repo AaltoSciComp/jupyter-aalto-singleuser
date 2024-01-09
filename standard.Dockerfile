@@ -117,6 +117,18 @@ RUN \
         && \
     clean-layer.sh
 
+# mlca2024, RT#25045
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        openeo \
+        imgaug \
+        ipyleaflet \
+        && \
+    /opt/software/bin/pip install --no-cache-dir \
+        fusets \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
