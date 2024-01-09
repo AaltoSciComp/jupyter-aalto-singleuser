@@ -2,6 +2,9 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+# NOTE: This file is executed twice: first as root from the image CMD, and then
+#       as $NB_USER after sudo.
+
 set -e
 set -x
 
