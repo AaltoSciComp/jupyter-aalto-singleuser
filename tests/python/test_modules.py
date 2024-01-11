@@ -62,3 +62,5 @@ def test_modules():
     import imgaug
     import ipyleaflet
     import fusets
+    import eolearn
+    import sentinelhub
