@@ -25,6 +25,8 @@ RUN mkdir /etc/julia && \
     fix-permissions $JULIA_PKGDIR
 
 RUN julia -e 'import Pkg; Pkg.update()' && \
+    # https://words.yuvi.in/post/pre-compiling-julia-docker/, RT#24964
+    export JULIA_CPU_TARGET="generic;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1)" && \
     (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
     julia -e "using Pkg; pkg\"add Gadfly RDatasets IJulia InstantiateFromURL Cbc Clp ECOS ForwardDiff GLPK Ipopt JuMP Plots PyPlot DataFrames Distributions CSV BenchmarkTools Test LaTeXStrings HiGHS JLD2\"; pkg\"precompile\"" && \
     echo "Done compiling..." && \
