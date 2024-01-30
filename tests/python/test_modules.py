@@ -64,3 +64,8 @@ def test_modules():
     import fusets
     import eolearn
     import sentinelhub
+
+    # valueanalytics2024
+    from openai import version as openai_version
+    assert version.parse(openai_version.VERSION) >= version.parse("1.10.0")
+    from openai import OpenAI

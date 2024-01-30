@@ -137,6 +137,14 @@ RUN \
         && \
     clean-layer.sh
 
+# valueanalytics2024, RT#25231
+RUN \
+    # NOTE: No --freeze-installed flag because couldn't install the package with it
+    /opt/software/bin/mamba install -p /opt/software -y \
+        'openai>=1.10' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
