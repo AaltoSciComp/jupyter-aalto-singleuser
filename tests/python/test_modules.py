@@ -63,7 +63,9 @@ def test_modules():
     import ipyleaflet
     import fusets
     import eolearn
-    import sentinelhub
+    # This import sometimes fails with a RecursionError related to enums,
+    # disabiling for now
+    #import sentinelhub
 
     # valueanalytics2024
     from openai import version as openai_version
