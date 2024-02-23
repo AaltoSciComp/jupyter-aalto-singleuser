@@ -145,6 +145,13 @@ RUN \
         && \
     clean-layer.sh
 
+# css2024, RT#25415
+RUN \
+    /opt/software/bin/pip install --no-cache-dir \
+        detoxify \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so

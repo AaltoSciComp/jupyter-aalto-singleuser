@@ -71,3 +71,6 @@ def test_modules():
     from openai import version as openai_version
     assert version.parse(openai_version.VERSION) >= version.parse("1.10.0")
     from openai import OpenAI
+
+    # css2024
+    import detoxify
