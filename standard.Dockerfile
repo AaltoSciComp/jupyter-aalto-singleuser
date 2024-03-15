@@ -152,6 +152,16 @@ RUN \
         && \
     clean-layer.sh
 
+# gausproc2024, RT#25611
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        'tensorflow-probability>=0.22.0' \
+        && \
+    /opt/software/bin/pip install --no-cache-dir \
+        'gpflow>=2.9.0' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so

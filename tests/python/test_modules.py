@@ -74,3 +74,9 @@ def test_modules():
 
     # css2024
     import detoxify
+
+    # gausproc2024
+    import tensorflow_probability
+    assert version.parse(tensorflow_probability.__version__) >= version.parse("0.22.0")
+    import gpflow
+    assert version.parse(gpflow.__version__) >= version.parse("2.9.0")
