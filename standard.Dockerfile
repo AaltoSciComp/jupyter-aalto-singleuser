@@ -162,6 +162,18 @@ RUN \
         && \
     clean-layer.sh
 
+# quantuminfo2024, RT#25838
+RUN \
+    # NOTE: No --freeze-installed flag because couldn't install the package with it
+    /opt/software/bin/mamba uninstall -p /opt/software -y \
+        qiskit-terra \
+        && \
+    /opt/software/bin/mamba install -p /opt/software -y \
+        'qiskit>=1' \
+        qiskit-aer \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
