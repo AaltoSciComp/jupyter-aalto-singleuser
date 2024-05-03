@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Modified from https://github.com/Qiskit/qiskit/blob/master/test/base.py
-#      and from https://github.com/Qiskit/qiskit/blob/master/test/test_simulation.py
+# Modified from https://github.com/Qiskit/qiskit-metapackage/blob/bb1c604a/test/base.py
+#      and from https://github.com/Qiskit/qiskit-metapackage/blob/bb1c604a/test/test_simulation.py
 
 # This code is part of Qiskit.
 #
@@ -21,7 +21,8 @@
 
 from unittest import TestCase
 from unittest.util import safe_repr
-from qiskit import *
+import qiskit
+from qiskit_aer import AerProvider
 
 
 def assertDictAlmostEqual(dict1, dict2, delta=None, msg=None,
@@ -121,9 +122,10 @@ def test_execute_in_aer():
     circuit.h(qr[0])
     circuit.measure(qr, cr)
 
-    backend = qiskit.Aer.get_backend('qasm_simulator')
+    aer = AerProvider()
+    backend = aer.get_backend("aer_simulator")
     shots = 2000
-    results = qiskit.execute(circuit, backend, shots=shots).result()
+    results = backend.run(circuit, shots=shots).result()
     return assertDictAlmostEqual({'0': 1000, '1': 1000},
                                  results.get_counts(),
                                  delta=100)
