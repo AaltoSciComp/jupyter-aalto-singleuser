@@ -174,6 +174,14 @@ RUN \
         && \
     clean-layer.sh
 
+# RT#25980
+RUN \
+    apt-get update && apt-get install -y --no-install-recommends \
+        # For exporting notebooks containing SVGs using nbconvert
+        inkscape \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
