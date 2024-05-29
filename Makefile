@@ -59,7 +59,7 @@ default:
 
 full-rebuild: base standard test-standard
 
-r-jh401:
+r-jh401: pre-build container-builder
 	docker buildx build . \
 		-t ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_JULIA) \
 		-f jh-upgrade.Dockerfile \
@@ -69,7 +69,7 @@ r-jh401:
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R_CACHE)
-julia-jh401:
+julia-jh401: pre-build container-builder
 	docker buildx build . \
 		-t ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) \
 		-f jh-upgrade.Dockerfile \
@@ -113,7 +113,7 @@ standard: pre-build container-builder
 #	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
 #r:
 #	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-r:0.4.0 --pull=false . -f r.Dockerfile
-r-ubuntu: pre-build
+r-ubuntu: pre-build container-builder
 	@! grep -P '\t' -C 1 r-ubuntu.Dockerfile || { echo "ERROR: Tabs in r-ubuntu.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
 		-t $(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) \
@@ -130,7 +130,7 @@ r-ubuntu: pre-build
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:r-$(VER_R_CACHE)
 #	#docker run --rm ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) conda env export -n base > environment-yml/$@-$(VER_R).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) conda list --revisions > conda-history/$@-$(VER_R).yml
-julia: pre-build
+julia: pre-build container-builder
 	@! grep -P '\t' -C 1 julia.Dockerfile || { echo "ERROR: Tabs in julia.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
 		-t $(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA) \
@@ -145,7 +145,7 @@ julia: pre-build
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda env export -n base > environment-yml/$@-$(VER_JULIA).yml
 	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda list --revisions > conda-history/$@-$(VER_JULIA).yml
-opencv: pre-build
+opencv: pre-build container-builder
 	@! grep -P '\t' -C 1 $@.Dockerfile || { echo "ERROR: Tabs in $@.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
 		-t $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) \
