@@ -143,8 +143,8 @@ julia: pre-build container-builder
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:julia-$(VER_JULIA_CACHE)
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda env export -n base > environment-yml/$@-$(VER_JULIA).yml
-	docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda list --revisions > conda-history/$@-$(VER_JULIA).yml
+	#docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda env export -n base > environment-yml/$@-$(VER_JULIA).yml
+	#docker run --rm ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) conda list --revisions > conda-history/$@-$(VER_JULIA).yml
 opencv: pre-build container-builder
 	@! grep -P '\t' -C 1 $@.Dockerfile || { echo "ERROR: Tabs in $@.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
@@ -158,8 +158,8 @@ opencv: pre-build container-builder
 		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV) \
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV_CACHE)
-	docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda env export -n base > environment-yml/$@-$(VER_CV).yml
-	docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda list --revisions > conda-history/$@-$(VER_CV).yml
+	#docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda env export -n base > environment-yml/$@-$(VER_CV).yml
+	#docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda list --revisions > conda-history/$@-$(VER_CV).yml
 
 update-environment:
 	cp $(ENVIRONMENT_FILE) environment.yml
