@@ -175,6 +175,7 @@ RUN \
     clean-layer.sh
 
 # RT#25980
+# TODO: remove when base updates
 RUN \
     apt-get update && apt-get install -y --no-install-recommends \
         # For exporting notebooks containing SVGs using nbconvert

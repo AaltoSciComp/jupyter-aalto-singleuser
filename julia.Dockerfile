@@ -71,6 +71,7 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 
 
 # RT#25980, issue #17
+# TODO: remove when base updates
 RUN \
     apt-get update && apt-get install -y --no-install-recommends \
         # For exporting notebooks containing SVGs using nbconvert

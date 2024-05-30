@@ -10,6 +10,9 @@ RUN sed -i 's/-exec chgrp/-exec chgrp -h/' /usr/local/bin/fix-permissions
 ## Apt packages
 # Some of these are copied from the scipy-notebook Dockerfile
 # See https://github.com/jupyter/docker-stacks/blob/main/scipy-notebook/Dockerfile
+#
+# inkscape: for exporting notebooks containing SVGs using nbconvert
+#
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
@@ -37,6 +40,7 @@ RUN apt-get update && \
         ncdu \
         quota \
         zip \
+        inkscape \
         && \
     clean-layer.sh
 
