@@ -27,8 +27,8 @@ VER_R=6.3.15
 VER_R_BASE=6.3
 VER_R_CACHE=6.3.15
 # OpenCV
-VER_CV=6.1.5
-VER_CV_CACHE=6.1.5
+VER_CV=6.3.16
+VER_CV_CACHE=6.3.16
 
 # Software for the standard image
 BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda

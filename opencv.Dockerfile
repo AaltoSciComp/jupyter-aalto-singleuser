@@ -19,7 +19,7 @@ RUN \
         && \
     clean-layer.sh
 
-ARG OPENCV_VERSION=4.8.0
+ARG OPENCV_VERSION=4.10.0
 
 RUN \
     cd /usr/local/src && \
