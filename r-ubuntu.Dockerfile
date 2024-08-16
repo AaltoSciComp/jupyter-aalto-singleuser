@@ -393,6 +393,29 @@ RUN \
 
 # ====================================
 
+# bayesda2022, RT#21998
+RUN \
+    echo 'remotes::install_github(' \
+            '"avehtari/BDA_course_Aalto", ' \
+            'subdir = "rpackage", ' \
+            'upgrade="never")' | CC=gcc CXX=g++ Rscript - && \
+    Rscript -e "library('aaltobda')" && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
+# bayesda2023, RT#24186
+ENV CMDSTAN=/coursedata/cmdstan
+RUN \
+    echo "CMDSTAN=${CMDSTAN}" >> /home/${NB_USER}/.Renviron && \
+    fix-permissions /home/${NB_USER}
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libtbb2 \
+          && \
+    clean-layer.sh
+
+# ====================================
+
 # Set default R compiler to clang to save memory.
 RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
     echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
