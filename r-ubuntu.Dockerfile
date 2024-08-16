@@ -39,6 +39,10 @@ RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
         libxml2-dev \
         # rstanarm dependency
         cmake \
+        # units dependency
+        libudunits2-dev \
+        # s2 dependency
+        libgdal-dev \
           && \
     update-alternatives --set cc  /usr/bin/clang && \
     update-alternatives --set c++ /usr/bin/clang++ && \
@@ -146,6 +150,17 @@ RUN \
         # smoti2023 RT#23112
         deSolve \
         FME \
+        # bayesda2023, RT#24552
+        # Used to be installed from GitHub, now updated in CRAN as well
+        posterior \
+        # bayesda2023, RT#24186
+        ggdist \
+        pacman \
+        # RT#24664
+        car \
+        # bayesda2023, RT#24324
+        # quarto package for R, depends on quarto-cli
+        quarto \
         # unknown purpose, was included in the original Dockerfile
         nloptr \
           && \
@@ -327,6 +342,22 @@ c.ClearSolutions.code_stub = {
 EOF
 
 # ====================================
+# bayesda2023, RT#24186
+# quarto-cli, a command line tool. Used as-is plus as a dependency for the R
+# package of the same name
+
+ARG QUARTO_HASH=667ea45f963949f8c13b75c63dd30734b7f5f0ec49fd5991c5824a753066fcdd
+ARG QUARTO_VERSION=1.3.450
+RUN \
+    cd /tmp && \
+    wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    echo "${QUARTO_HASH} quarto-${QUARTO_VERSION}-linux-amd64.deb" | sha256sum -c && \
+    dpkg -i quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    rm quarto-${QUARTO_VERSION}-linux-amd64.deb && \
+    quarto install tinytex && \
+    clean-layer.sh
+
+# ====================================
 
 #
 # TODO: Last-added packages, move to above when rebuilding
@@ -349,30 +380,11 @@ EOF
 #     fix-permissions /usr/local/lib/R/site-library && \
 #     clean-layer.sh
 
-# bayesda2023, RT#24186
-RUN \
-    install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} \
-        ggdist \
-        pacman \
-          && \
-    fix-permissions /usr/local/lib/R/site-library && \
-    clean-layer.sh
-
 # ====================================
 
 # TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
 RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
-    clean-layer.sh
-
-# ====================================
-
-# RT#24664
-RUN \
-    install-r-packages.sh --url ${CRAN_URL} -j ${INSTALL_JOB_COUNT} \
-        car \
-          && \
-    fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
 
 # ====================================
