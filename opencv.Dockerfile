@@ -46,7 +46,13 @@ RUN \
     make install && \
     cd /usr/local/src && rm -r /usr/local/src/*
 
-RUN conda install --quiet --yes pyflann line_profiler
+# compvis2023, RT#24142
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        pyflann \
+        line_profiler \
+        && \
+    clean-layer.sh
 
 # Save version information within the image
 ARG IMAGE_VERSION
