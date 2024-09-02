@@ -1,10 +1,10 @@
 import pytest
 
 def test_imports():
+    import optuna
     import skopt
     import lightgbm
     import catboost
-    import missingno
 
 def test_scikit_optimize():
     import numpy as np
