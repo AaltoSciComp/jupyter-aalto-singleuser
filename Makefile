@@ -186,6 +186,9 @@ test-standard-full: test-standard pre-test
 	@echo
 	@echo
 	@echo "All tests passed..."
+test-julia: pre-test
+	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) bash -c 'pwd; file=${TESTFILE:-*}; [ -z "$${file}" ] && file="/tests/julia/*" || file="/tests/julia/$${file}"; echo file $${file}; for x in $${file}; do echo Running $$x; /usr/local/bin/julia $$x ${TESTARGS} || exit 1; done'
+	rm -r $(TEST_DIR)
 
 test-r-ubuntu: pre-test
 	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript -e "source('/tests/r/test_all.r')"
