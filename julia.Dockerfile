@@ -79,6 +79,15 @@ RUN \
         && \
     clean-layer.sh
 
+# matplotlib is required by the PyPlot package. The currently installed version
+# of PyPlot uses a now-deprecated function `register_cmap`, so it requires an
+# old version of matplotlib
+RUN \
+    /opt/conda/bin/pip install --no-cache-dir \
+        'matplotlib<3.6.0' \
+        # The requested version of matplotlib doesn't seem to work with numpy>=2
+        'numpy<2' && \
+    clean-layer.sh
 
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
