@@ -183,6 +183,13 @@ RUN \
         && \
     clean-layer.sh
 
+# ml2024, RT#26893
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        'gym==0.21.0' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
