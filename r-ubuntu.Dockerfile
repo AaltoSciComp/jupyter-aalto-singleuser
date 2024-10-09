@@ -3,6 +3,8 @@ FROM ${BASE_IMAGE}
 
 USER root
 
+RUN echo Clear build cache
+
 RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
          -O /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
     echo "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" \
@@ -136,8 +138,8 @@ RUN \
         # " RT#15341
         markmyassignment \
         RUnit \
-        # htbioinformatics RT#17450
-        aods3 \
+        # htbioinformatics RT#17450, removed from CRAN: https://cran.r-project.org/web/packages/aods3/index.html
+        # aods3 \
         # compgeno2022 RT#21822
         ape \
         ggplot2 \
@@ -163,6 +165,8 @@ RUN \
         quarto \
         # unknown purpose, was included in the original Dockerfile
         nloptr \
+        # bayesda2024, RT#26605
+        priorsense \
           && \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
