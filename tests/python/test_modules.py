@@ -80,3 +80,8 @@ def test_modules():
     assert version.parse(tensorflow_probability.__version__) >= version.parse("0.22.0")
     import gpflow
     assert version.parse(gpflow.__version__) >= version.parse("2.9.0")
+
+    # dbbb2024
+    import vaderSentiment
+    import niimpy
+    import liwc

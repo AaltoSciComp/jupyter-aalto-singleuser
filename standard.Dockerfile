@@ -183,6 +183,14 @@ RUN \
         && \
     clean-layer.sh
 
+# dhhb2024, RT#27034
+RUN \
+    /opt/software/bin/pip install --no-cache-dir \
+        niimpy \
+        liwc \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
