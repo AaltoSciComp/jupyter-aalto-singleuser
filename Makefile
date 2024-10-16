@@ -246,6 +246,9 @@ prune-images: check-khost check-knodes
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker container prune -f'
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker images' | cut '-d:' '-f2-' | sort
 
+run-standard:
+	docker run -it --rm -v/l/jupyter/mount:/notebooks -p127.0.0.1:8888:8888 ${REGISTRY}${GROUP}/notebook-server:${VER_STD}
+
 # Aborts the process if necessary environment variables are not set
 # https://stackoverflow.com/a/4731504/3005969
 check-khost:
