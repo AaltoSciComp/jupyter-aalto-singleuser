@@ -193,9 +193,17 @@ RUN \
 
 # ========================================
 
-# Duplicate of base, but hooks can update frequently and are small so
-# put them last.
+# Duplicate of base, but hooks and patches can update frequently and are small,
+# so they're applied again here.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
+
+COPY patches/ /tmp/patches/
+RUN \
+    cd / && \
+    for patch in /tmp/patches/*; do \
+        echo $patch && \
+        patch -p0 -u < $patch; \
+    done
 
 # Save version information within the image
 ARG IMAGE_VERSION

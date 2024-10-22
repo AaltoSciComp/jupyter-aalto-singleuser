@@ -137,11 +137,19 @@ RUN \
 RUN \
     jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 
-# Hooks and scripts are also copied at the end of other Dockerfiles because
-# they might update frequently
+# Hooks, scripts, and patches are also copied and applied at the end of other
+# Dockerfiles because they might update frequently
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 
-# Save version information within the image
+COPY patches/ /tmp/patches/
+RUN \
+    cd / && \
+    for patch in /tmp/patches/*; do \
+        echo $patch && \
+        patch -p0 -u < $patch; \
+    done
+
+    # Save version information within the image
 ARG IMAGE_VERSION
 ARG UPSTREAM_MINIMAL_NOTEBOOK_VER
 ARG GIT_DESCRIBE
