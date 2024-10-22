@@ -1,0 +1,11 @@
+--- /opt/conda/lib/python3.10/site-packages/nbgrader/api.py	2024-10-22 19:14:21.998113000 +0300
++++ /opt/conda/lib/python3.10/site-packages/nbgrader/api-new.py	2024-10-22 19:14:50.244868000 +0300
+@@ -34,7 +34,7 @@
+
+ def get_alembic_version() -> str:
+     with _temp_alembic_ini('sqlite:////tmp/gradebook.db') as alembic_ini:
+-        output = sp.check_output(['alembic', '-c', alembic_ini, 'heads'])
++        output = sp.check_output(['/opt/conda/bin/alembic', '-c', alembic_ini, 'heads'])
+         head = output.decode().split("\n")[0].split(" ")[0]
+         return head
+
