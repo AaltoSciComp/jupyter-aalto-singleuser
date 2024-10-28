@@ -191,6 +191,13 @@ RUN \
         && \
     clean-layer.sh
 
+# dhhb2024, RT#27034
+RUN \
+    /opt/conda/bin/mamba install -p /opt/conda -y \
+        plotly \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,
