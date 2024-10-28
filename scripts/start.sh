@@ -12,7 +12,8 @@ set -x
 if [ $# -eq 0 ]; then
     cmd=( "bash" )
 else
-    cmd=( "$@" )
+    # Make sure that the command isn't accidentally executed from /opt/software
+    cmd=( "/opt/conda/bin/$@")
 fi
 
 run-hooks () {
