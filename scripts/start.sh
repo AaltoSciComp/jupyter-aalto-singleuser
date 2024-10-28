@@ -13,7 +13,11 @@ if [ $# -eq 0 ]; then
     cmd=( "bash" )
 else
     # Make sure that the command isn't accidentally executed from /opt/software
-    cmd=( "/opt/conda/bin/$@")
+    if [[ "$@" != "/opt/conda/bin/"* ]]; then
+        cmd=( "/opt/conda/bin/$@")
+    else
+        cmd=( "$@" )
+    fi
 fi
 
 run-hooks () {
