@@ -414,6 +414,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
           && \
     clean-layer.sh
 
+# bayesda2024, RT#27272
+RUN \
+    Rscript -e 'remotes::install_github("paul-buerkner/brms")' && \
+    clean-layer.sh
+
 # ====================================
 
 # Set default R compiler to clang to save memory.
