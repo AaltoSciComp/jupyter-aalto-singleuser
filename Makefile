@@ -247,7 +247,16 @@ prune-images: check-khost check-knodes
 	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker images' | cut '-d:' '-f2-' | sort
 
 run-standard:
-	docker run -it --rm -v/l/jupyter/mount:/notebooks -p127.0.0.1:8888:8888 ${REGISTRY}${GROUP}/notebook-server:${VER_STD}
+	docker run \
+		-it --rm \
+		--user 0 \
+		-v /l/jupyter/mount/notebooks:/notebooks \
+		-v /l/jupyter/mount/course:/course \
+		-v /l/jupyter/mount/exchange:/srv/nbgrader/exchange \
+		-p 127.0.0.1:8888:8888 \
+		-p 127.0.0.1:5678:5678 \
+		-e AALTO_NB_ENABLE_FORMGRADER=yes \
+		${REGISTRY}${GROUP}/notebook-server:${VER_STD}
 
 # Aborts the process if necessary environment variables are not set
 # https://stackoverflow.com/a/4731504/3005969
