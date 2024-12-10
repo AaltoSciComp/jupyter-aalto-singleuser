@@ -85,3 +85,7 @@ def test_modules():
     import vaderSentiment
     import niimpy
     import liwc
+
+    # deeplearn2024
+    import transformers
+    assert version.parse(transformers.__version__) >= version.parse("4.46.0")

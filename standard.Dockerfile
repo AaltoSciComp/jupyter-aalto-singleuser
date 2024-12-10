@@ -198,6 +198,23 @@ RUN \
         && \
     clean-layer.sh
 
+# deeplearn2025, RT#27200
+# Not freezing because triggering a version update
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y \
+        'transformers>=4.46.0' \
+        && \
+    clean-layer.sh
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        # deeplearn2025, RT#27200
+        peft \
+        # RT#27516
+        pulp \
+        glpk \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,
