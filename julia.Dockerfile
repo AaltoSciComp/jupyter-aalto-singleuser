@@ -5,8 +5,8 @@ USER root
 
 ENV JULIA_DEPOT_PATH=/opt/julia
 ENV JULIA_PKGDIR=/opt/julia
-ENV JULIA_VERSION=1.9.4
-ENV JULIA_HASH=07d20c4c2518833e2265ca0acee15b355463361aa4efdab858dad826cf94325c
+ENV JULIA_VERSION=1.11.2
+ENV JULIA_HASH=8a372ad262d4d4d55a1044f4fe3bce7c9a4a3ce8c513d2470e58e8071eecd476
 
 # https://julialang.org/downloads/
 # wget -O- https://julialang-s3.julialang.org/bin/linux/x64/1.8/julia-1.8.4-linux-x86_64.tar.gz | sha256sum -
@@ -28,10 +28,34 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
     # https://words.yuvi.in/post/pre-compiling-julia-docker/, RT#24964
     export JULIA_CPU_TARGET="generic;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1)" && \
     (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
-    julia -e "using Pkg; pkg\"add Gadfly RDatasets IJulia InstantiateFromURL Cbc Clp ECOS ForwardDiff GLPK Ipopt JuMP Plots PyPlot DataFrames Distributions CSV BenchmarkTools Test LaTeXStrings HiGHS JLD2\"; pkg\"precompile\"" && \
+    set -x; \
+    julia -e \
+        'using Pkg; Pkg.add([ \
+            "Gadfly", \
+            "RDatasets", \
+            "IJulia", \
+            "Cbc", \
+            "Clp", \
+            "ECOS", \
+            "ForwardDiff", \
+            "GLPK", \
+            "Ipopt", \
+            "JuMP", \
+            "Plots", \
+            "PyPlot", \
+            "DataFrames", \
+            "Distributions", \
+            "CSV", \
+            "BenchmarkTools", \
+            "Test", \
+            "LaTeXStrings", \
+            "HiGHS", \
+            "JLD2", \
+        ]); \
+        Pkg.add(url="https://github.com/gamma-opt/JuMPModelPlotting") # linopt2024, RT#24964 \
+        Pkg.precompile()' && \
     echo "Done compiling..." && \
     mv $HOME/.local/share/jupyter/kernels/julia* $CONDA_DIR/share/jupyter/kernels/ && \
-    chmod -R go+rx $CONDA_DIR/share/jupyter && \
     rm -rf $HOME/.local && \
     fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter && \
     echo "done"
@@ -49,7 +73,12 @@ RUN \
 
 
 #RUN julia -e 'import Pkg; Pkg.update()' && \
-#    julia -e "using Pkg; pkg\"add AAA BBB\"; pkg\"precompile\"" && \
+#    julia -e \
+#        'using Pkg; Pkg.add([ \
+#            "AAA", \
+#            "BBB", \
+#        ]); \
+#        Pkg.precompile()' && \
 #    echo "Done compiling..." && \
 #    rm -rf $HOME/.local && \
 #    fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter && \
@@ -60,24 +89,6 @@ RUN \
         'jupyterhub>=4.0.1' && \
     clean-layer.sh
 
-
-# linopt2024, RT#24964
-RUN julia -e 'import Pkg; Pkg.update()' && \
-    julia -e "using Pkg; pkg\"add https://github.com/gamma-opt/JuMPModelPlotting\"; pkg\"precompile\"" && \
-    echo "Done compiling..." && \
-    rm -rf $HOME/.local && \
-    fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter && \
-    echo "done"
-
-
-# RT#25980, issue #17
-# TODO: remove when base updates
-RUN \
-    apt-get update && apt-get install -y --no-install-recommends \
-        # For exporting notebooks containing SVGs using nbconvert
-        inkscape \
-        && \
-    clean-layer.sh
 
 # matplotlib is required by the PyPlot package. The currently installed version
 # of PyPlot uses a now-deprecated function `register_cmap`, so it requires an
