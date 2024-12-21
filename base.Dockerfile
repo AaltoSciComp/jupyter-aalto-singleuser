@@ -69,13 +69,13 @@ RUN \
         ipywidgets \
         # TODO: replace with https://jupyterlab-contrib.github.io/migrate_from_classical.html
         #       when switching to JupyterLab for good
-        jupyter_contrib_nbextensions \
+        # jupyter_contrib_nbextensions \
         nbval \
         pipdeptree \
         pytest \
         voila \
         && \
-    jupyter contrib nbextension install --sys-prefix && \
+    # jupyter contrib nbextension install --sys-prefix && \
     python -m bash_kernel.install --sys-prefix && \
     ln -s /notebooks /home/jovyan/notebooks && \
     rm --dir /home/jovyan/work && \
@@ -109,30 +109,30 @@ RUN \
 # Nbgrader
 RUN \
     pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev501 && \
-    jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
-    jupyter nbextension enable --sys-prefix --py nbgrader && \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev503 && \
+    # jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
+    # jupyter nbextension enable --sys-prefix --py nbgrader && \
     jupyter serverextension enable --sys-prefix --py nbgrader && \
     \
-    jupyter nbextension disable --sys-prefix formgrader/main --section=tree && \
+    # jupyter nbextension disable --sys-prefix formgrader/main --section=tree && \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.formgrader && \
     jupyter labextension disable --level=sys_prefix --no-build nbgrader/formgrader && \
     \
-    jupyter nbextension disable --sys-prefix create_assignment/main && \
+    # jupyter nbextension disable --sys-prefix create_assignment/main && \
     jupyter labextension disable --level=sys_prefix --no-build nbgrader/create-assignment && \
     \
-    jupyter nbextension disable --sys-prefix course_list/main --section=tree && \
+    # jupyter nbextension disable --sys-prefix course_list/main --section=tree && \
     jupyter serverextension disable --sys-prefix nbgrader.server_extensions.course_list && \
     jupyter labextension disable --level=sys_prefix --no-build nbgrader/course-list && \
     clean-layer.sh
 
-RUN \
-    # jupyter_lsp gets installed as a dependency but it doesn't work with the
-    # legacy notebook interface. Should be enabled again after migrating to
-    # jupyter-server.
-    # https://github.com/jupyter-lsp/jupyterlab-lsp/issues/943
-    jupyter serverextension disable jupyter_lsp && \
-    clean-layer.sh
+# RUN \
+#     # jupyter_lsp gets installed as a dependency but it doesn't work with the
+#     # legacy notebook interface. Should be enabled again after migrating to
+#     # jupyter-server.
+#     # https://github.com/jupyter-lsp/jupyterlab-lsp/issues/943
+#     jupyter serverextension disable jupyter_lsp && \
+#     clean-layer.sh
 
 RUN \
     jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
