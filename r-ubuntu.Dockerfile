@@ -400,6 +400,11 @@ RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
 
 ENV CC=clang CXX=clang++
 ENV BINPREF=PATH
+
+# TODO: remove when base updates
+RUN \
+    rm /usr/local/bin/before-notebook-root.d/allow-client-build.sh
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/

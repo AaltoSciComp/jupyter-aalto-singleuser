@@ -6,26 +6,26 @@ UPSTREAM_MINIMAL_NOTEBOOK_VER=4d70cf8da953
 CRAN_URL=https://ftp.acc.umu.se/mirror/CRAN/
 
 # base image - jupyter stuff only, not much software
-VER_BASE=6.6
+VER_BASE=6.7-dev
 # Set VER_BASE_CACHE to the version you want to use as the cache for the base
 # image. When bumping VER_BASE to build a new image, this should be set to the
 # previously published version for the duration of the build process.
-VER_BASE_CACHE=6.3
+VER_BASE_CACHE=6.6
 
 # Python
-VER_STD=6.3.23
+VER_STD=6.3.24-dev
 VER_STD_BASE=6.3
 # See the comment for VER_BASE_CACHE
-VER_STD_CACHE=6.3.22
+VER_STD_CACHE=6.3.23
 
 # Julia
-VER_JULIA=6.3.17
+VER_JULIA=6.3.24-dev
 VER_JULIA_BASE=6.3
-VER_JULIA_CACHE=6.3.4
+VER_JULIA_CACHE=6.3.17
 # R
-VER_R=6.3.18
+VER_R=6.3.24-dev
 VER_R_BASE=6.3
-VER_R_CACHE=6.3.15
+VER_R_CACHE=6.3.18
 # OpenCV
 VER_CV=6.3.16
 VER_CV_CACHE=6.3.16
