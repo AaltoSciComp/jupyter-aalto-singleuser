@@ -93,6 +93,18 @@ RUN \
 RUN \
     rm /usr/local/bin/before-notebook-root.d/allow-client-build.sh
 
+# TODO: remove when updating base
+# Fixes https://github.com/jupyter/nbgrader/issues/1870
+RUN \
+    # Use the full path to pip to be more explicit about which environment
+    # we're installing to
+    /opt/conda/bin/pip uninstall nbgrader -y && \
+    /opt/conda/bin/pip install --no-cache-dir \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
+    clean-layer.sh
+
+# ========================================
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/

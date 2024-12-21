@@ -109,7 +109,7 @@ RUN \
 # Nbgrader
 RUN \
     pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev503 && \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
     # jupyter nbextension install --sys-prefix --py nbgrader --overwrite && \
     # jupyter nbextension enable --sys-prefix --py nbgrader && \
     jupyter serverextension enable --sys-prefix --py nbgrader && \
