@@ -114,6 +114,21 @@ RUN \
         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
     clean-layer.sh
 
+
+# linopt2025 RT#27927
+RUN julia -e 'import Pkg; Pkg.update()' && \
+   julia -e \
+       'using Pkg; Pkg.add([ \
+            "Combinatorics", \
+            "Polyhedra", \
+            "PlotlyJS", \
+       ]); \
+       Pkg.precompile()' && \
+   echo "Done compiling..." && \
+   rm -rf $HOME/.local && \
+   fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter && \
+   echo "done"
+
 # ========================================
 
 # Duplicate of base, but hooks can update frequently and are small so
