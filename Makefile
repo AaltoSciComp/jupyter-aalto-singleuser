@@ -182,30 +182,63 @@ pre-test:
 	chmod -R o=rX $(TEST_DIR)
 
 test-standard-conda: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) /opt/conda/bin/pytest -o cache_dir=/tmp/pytestcache /tests/python_conda/${TESTFILE} ${TESTARGS}
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server:$(VER_STD) \
+		/opt/conda/bin/pytest \
+			-o cache_dir=/tmp/pytestcache \
+			/tests/python_conda/${TESTFILE} \
+			${TESTARGS}
 	rm -r $(TEST_DIR)
 
 test-standard: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) /opt/software/bin/pytest -o cache_dir=/tmp/pytestcache /tests/python/${TESTFILE} ${TESTARGS}
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server:$(VER_STD) \
+		/opt/software/bin/pytest \
+			-o cache_dir=/tmp/pytestcache \
+			/tests/python/${TESTFILE} \
+			${TESTARGS}
 	rm -r $(TEST_DIR)
 #	CC="clang" CXX="clang++" jupyter nbconvert --exec --ExecutePreprocessor.timeout=300 pystan_demo.ipynb --stdout
 test-standard-full: test-standard pre-test
-	docker run --volume=/tmp/nbs-tests:/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) bash -c 'cd /tmp ; git clone https://github.com/avehtari/BDA_py_demos ; cd BDA_py_demos/demos_pystan/ ; CC=clang CXX=clang++ jupyter nbconvert --exec --ExecutePreprocessor.timeout=300 pystan_demo.ipynb --stdout > /dev/null'
+	docker run \
+		--volume=/tmp/nbs-tests:/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server:$(VER_STD) \
+		bash -c 'cd /tmp ; git clone https://github.com/avehtari/BDA_py_demos ; cd BDA_py_demos/demos_pystan/ ; CC=clang CXX=clang++ jupyter nbconvert --exec --ExecutePreprocessor.timeout=300 pystan_demo.ipynb --stdout > /dev/null'
 	rm -r $(TEST_DIR)
 	@echo
 	@echo
 	@echo
 	@echo "All tests passed..."
 test-julia: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) bash -c 'pwd; file=${TESTFILE:-*}; [ -z "$${file}" ] && file="/tests/julia/*" || file="/tests/julia/$${file}"; echo file $${file}; for x in $${file}; do echo Running $$x; /usr/local/bin/julia $$x ${TESTARGS} || exit 1; done'
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) \
+		bash -c 'pwd; file=${TESTFILE:-*}; [ -z "$${file}" ] && file="/tests/julia/*" || file="/tests/julia/$${file}"; echo file $${file}; for x in $${file}; do echo Running $$x; /usr/local/bin/julia $$x ${TESTARGS} || exit 1; done'
 	rm -r $(TEST_DIR)
 
 test-r-ubuntu: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) Rscript -e "source('/tests/r/test_all.r')"
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) \
+		Rscript -e "source('/tests/r/test_all.r')"
 	rm -r $(TEST_DIR)
 
 test-opencv: pre-test
-	docker run --volume=$(TEST_DIR):/tests:ro ${TEST_MEM_LIMIT} $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) pytest -o cache_dir=/tmp/pytestcache /tests/python_opencv/test_opencv.py ${TESTARGS}
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) \
+		pytest \
+			-o cache_dir=/tmp/pytestcache \
+			/tests/python_opencv/test_opencv.py \
+			${TESTARGS}
 	rm -r $(TEST_DIR)
 
 # Because the docker-container driver is isolated from the system docker and
@@ -218,7 +251,6 @@ push-standard:
 push-r-ubuntu:
 	docker push ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R)
 push-julia:
-#	time docker save ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA} | ssh manager ssh jupyter-k8s-node4.cs.aalto.fi 'docker load'
 	docker push ${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA)
 push-dev: check-khost
 	## NOTE: Saving and loading the whole image takes a long time. Pushing
