@@ -50,6 +50,16 @@ GROUP=jupyter
 # When left empty, defaults to the same values as the standard image.
 BASE_REG_GROUP=${REGISTRY}${GROUP}
 
+# Contains pull secret for parallel-ssh
+DOCKERCONFIG=~/git/jupyter/secrets/dockerconfig-jupyter
+# The entry to read from the dockerconfig file
+AUTH_REGISTRY=harbor.cs.aalto.fi
+# Kubernetes nodes to pull the image to
+KNODES=k8s-node{3,4,5,7,8,10,12,13,20,21,22,23}.cs.aalto.fi
+SSH_USER=root
+# Running using bash because of the brace expansion
+$(eval KNODES := $(shell bash -c "echo ${KNODES}"))
+
 $(eval GIT_DESCRIBE := $(shell git describe))
 
 .PHONY: default
@@ -224,20 +234,30 @@ push-devhub-base: check-khost check-hubrepo
 	docker push ${HUBREPO}/notebook-server-base:${VER_BASE}
 	ssh ${KHOST} ssh k8s-node4.cs.aalto.fi "docker pull ${HUBREPO}/notebook-server-base:${VER_BASE}"
 
-pull-standard: check-khost check-knodes
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker pull ${REGISTRY}${GROUP}/notebook-server:${VER_STD}"
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker tag ${REGISTRY}${GROUP}/notebook-server:${VER_STD} ${REGISTRY}${GROUP}/notebook-server:${VER_STD}"
-pull-r-ubuntu: check-khost check-knodes
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker pull ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_R}"
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker tag ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_R} ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_R}"
-pull-julia: check-khost check-knodes
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker pull ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA}"
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} "docker tag ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA} ${REGISTRY}${GROUP}/notebook-server-julia:${VER_JULIA}"
+pull-standard:
+	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
+pull-r-ubuntu:
+	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R)
+pull-julia:
+	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA)
+pull-opencv:
+	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV)
 
-pull-standard-dev:
-	ssh 3 ctr -n k8s.io images pull ${REGISTRY}${GROUP}/notebook-server:${VER_STD}
-pull-r-dev: push-r-ubuntu
-	ssh 3 ctr -n k8s.io images pull ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:${VER_R}
+# Not meant to be called directly in most cases
+pull-generic: check-image
+	jq --raw-output '.auths."${AUTH_REGISTRY}".auth | @base64d' ${DOCKERCONFIG} \
+		| parallel-ssh \
+			--user ${SSH_USER} \
+			--send-input \
+			--host "${KNODES}" \
+			--errdir pssh/errdir \
+			--outdir pssh/outdir \
+			"ctr -n k8s.io images pull --user \"\$$(cat -)\" ${IMAGE}"
+
 
 # Clean up disk space
 prune-images: check-khost check-knodes
@@ -273,6 +293,11 @@ endif
 check-hubrepo:
 ifndef HUBREPO
 	$(error HUBREPO is undefined. Format: HUBREPO=dockerhub_repo_name)
+endif
+
+check-image:
+ifndef IMAGE
+	$(error IMAGE is undefined. Format: IMAGE=registry/group/image:tag)
 endif
 
 # Git only tracks the execute bit of the owner, no other permissions. Running
