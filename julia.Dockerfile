@@ -26,7 +26,7 @@ RUN mkdir /etc/julia && \
 
 RUN julia -e 'import Pkg; Pkg.update()' && \
     # https://words.yuvi.in/post/pre-compiling-julia-docker/, RT#24964
-    export JULIA_CPU_TARGET="generic;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1)" && \
+    export JULIA_CPU_TARGET="generic;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1);znver2,clone_all" && \
     (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
     set -x; \
     julia -e \
