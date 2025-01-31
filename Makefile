@@ -288,6 +288,7 @@ pull-generic: check-image
 			--host "${KNODES}" \
 			--errdir pssh/errdir \
 			--outdir pssh/outdir \
+			--timeout 0 \
 			"ctr -n k8s.io images pull --user \"\$$(cat -)\" ${IMAGE}"
 
 
