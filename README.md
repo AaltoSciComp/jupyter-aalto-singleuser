@@ -5,7 +5,7 @@ Submit issues and pull requests to this repository for user server
 environment.  Note that some courses may possibly have different
 images.
 
-The built images are on DockerHub:  https://hub.docker.com/r/aaltoscienceit/notebook-server
+The built images are on Harbor:  <https://harbor.cs.aalto.fi/harbor/projects/4/repositories>
 
 # How it works
 
