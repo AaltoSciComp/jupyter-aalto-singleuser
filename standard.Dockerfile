@@ -233,6 +233,17 @@ RUN \
 
 # ========================================
 
+# snlp2025, RT#28201
+RUN \
+    /opt/software/bin/pip install \
+        # Installing a specific version because an assigment depends on it. Can
+        # be relaxed later
+        'stanza==1.10.1' \
+        && \
+    clean-layer.sh
+
+# ========================================
+
 # Duplicate of base, but hooks and patches can update frequently and are small,
 # so they're applied again here.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
