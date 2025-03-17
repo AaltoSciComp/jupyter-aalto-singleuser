@@ -251,7 +251,7 @@ COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
 COPY patches/ /tmp/patches/
 RUN \
     cd / && \
-    for patch in /tmp/patches/*; do \
+    for patch in /tmp/patches/*.diff; do \
         echo $patch && \
         patch -p0 -u < $patch; \
     done
