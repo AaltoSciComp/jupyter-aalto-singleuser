@@ -242,6 +242,13 @@ RUN \
         && \
     clean-layer.sh
 
+# snlp2025, RT#28201
+RUN \
+    /opt/software/bin/pip install \
+        'umap-learn' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,
