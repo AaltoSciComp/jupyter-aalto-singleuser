@@ -386,13 +386,6 @@ RUN \
 
 # ====================================
 
-# TODO: Remove this when upgrading to jupyterlab>=4 and jupyter_server>=2
-RUN \
-    /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
-    clean-layer.sh
-
-# ====================================
-
 # Set default R compiler to clang to save memory.
 RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
     echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
@@ -416,6 +409,19 @@ RUN \
     clean-layer.sh
 
 # ========================================
+
+RUN \
+    /opt/conda/bin/pip install \
+        # make sure that we're not accidentally upgrading jupyterlab, change when base updates
+        jupyterlab==3.6.5 \
+        # terminals requires >=v2
+        'jupyter-server>2' \
+        # older voila is incompatible with jupyter-server>=2
+        'voila>0.5' \
+        jupyter_server_terminals && \
+    clean-layer.sh
+
+# ====================================
 
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
