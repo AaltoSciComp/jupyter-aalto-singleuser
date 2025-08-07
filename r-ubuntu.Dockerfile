@@ -406,6 +406,34 @@ RUN \
 
 # ====================================
 
+# bayesda2022, RT#21998
+RUN \
+    echo 'remotes::install_github(' \
+            '"avehtari/BDA_course_Aalto", ' \
+            'subdir = "rpackage", ' \
+            'upgrade="never")' | CC=gcc CXX=g++ Rscript - && \
+    Rscript -e "library('aaltobda')" && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
+# bayesda2023, RT#24186
+ENV CMDSTAN=/coursedata/cmdstan
+RUN \
+    echo "CMDSTAN=${CMDSTAN}" >> /home/${NB_USER}/.Renviron && \
+    fix-permissions /home/${NB_USER}
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libtbb2 \
+          && \
+    clean-layer.sh
+
+# bayesda2024, RT#27272, RT#27349
+RUN \
+    Rscript -e 'remotes::install_github("paul-buerkner/brms")' && \
+    clean-layer.sh
+
+# ====================================
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
