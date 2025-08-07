@@ -1,4 +1,4 @@
-ARG BASE_IMAGE
+ARG BASE_IMAGE=invalid
 FROM ${BASE_IMAGE}
 
 USER root
@@ -221,7 +221,7 @@ RUN rm -r /home/$NB_USER/.local/ && \
     echo 'c.LabApp.iopub_data_rate_limit = .8*2**20' >> /etc/jupyter/jupyter_notebook_config.py && \
     echo "c.KernelSpecManager.whitelist={'ir', 'bash'}" >> /etc/jupyter/jupyter_notebook_config.py
 
-ENV R_MAKEVARS_SITE /usr/lib/R/etc/Makevars
+ENV R_MAKEVARS_SITE=/usr/lib/R/etc/Makevars
 
 #
 # Rstudio
