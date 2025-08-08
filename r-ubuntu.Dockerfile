@@ -3,7 +3,7 @@ FROM ${BASE_IMAGE}
 
 USER root
 
-RUN echo Clear build cache
+RUN echo Clear build cache 2025-08
 
 RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
          -O /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
@@ -186,6 +186,9 @@ RUN \
         DECIPHER \
         ORFik \
         Biostrings \
+        # RT#18146 ELEC-A8720 - Biologisten ilmiöiden mittaaminen
+        biomaRt \
+        snpStats \
           && \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
@@ -196,18 +199,6 @@ RUN \
         # bayesian data analysis, RT#21752
         cmdstanr \
           && \
-    fix-permissions /usr/local/lib/R/site-library && \
-    clean-layer.sh
-
-# ELEC-A8720 - Biologisten ilmiöiden mittaaminen
-#              (Quantifying/measuring biological phenomena).
-# RT#18146
-# TODO: check if CC, CXX are needed. If not, move to above
-RUN \
-    echo 'BiocManager::install(c('\
-            '"biomaRt", ' \
-            '"snpStats" ' \
-        '))' | CC=gcc CXX=g++ Rscript - && \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
 
@@ -239,9 +230,8 @@ RUN apt-get update && \
         && \
     clean-layer.sh
 
-ENV RSTUDIO_PKG=rstudio-server-2023.06.1-524-amd64.deb
-ENV RSTUDIO_CHECKSUM=208897f00b580b45c37dbb787dc482ff6d774b32c230f49578691b1a11f40c37
-# https://github.com/jupyterhub/nbrsessionproxy
+ENV RSTUDIO_PKG=rstudio-server-2025.05.1-513-amd64.deb
+ENV RSTUDIO_CHECKSUM=8e49ca68d154d5d17ae5fcc386e9c93473f9b73f6f573a1511866051e288b547
 # Download url: https://www.rstudio.com/products/rstudio/download-server/
 RUN wget -q https://download2.rstudio.org/server/$(lsb_release -sc)/amd64/${RSTUDIO_PKG} && \
     test "$(sha256sum < ${RSTUDIO_PKG})" = "${RSTUDIO_CHECKSUM}  -" && \
@@ -249,9 +239,8 @@ RUN wget -q https://download2.rstudio.org/server/$(lsb_release -sc)/amd64/${RSTU
     rm ${RSTUDIO_PKG}
 
 # Rstudio for jupyterlab
+# https://github.com/jupyterhub/jupyter-rsession-proxy
 RUN pip install --no-cache-dir jupyter-rsession-proxy && \
-    pip install jupyter-server-proxy && \
-    jupyter labextension install @jupyterlab/server-proxy && \
     jupyter labextension install @techrah/text-shortcuts && \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
@@ -269,11 +258,12 @@ RUN \
         && \
     clean-layer.sh
 
+# https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 RUN cd /opt && \
     mkdir fastcq && \
-    wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.8.zip && \
-    unzip fastqc_v0.11.8.zip && \
-    rm fastqc_v0.11.8.zip && \
+    wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.12.1.zip && \
+    unzip fastqc_v0.12.1.zip && \
+    rm fastqc_v0.12.1.zip && \
     chmod a+x ./FastQC/fastqc && \
     ln -s $PWD/FastQC/fastqc /usr/local/bin/ && \
     fix-permissions /opt/fastcq /usr/local/bin
@@ -288,28 +278,15 @@ RUN conda config --append channels bioconda && \
         && \
     clean-layer.sh
 
-# htbioinformatics2019
-# https://ccb.jhu.edu/software/tophat/tutorial.shtml
-# TODO: changed https->http because of a SSL error in ubuntu as of
-# 2020-07-10, convert http->https later and see if it works
-# 2022-08-22: the site still serves insecure signatures not accepted by cURL
-RUN cd /opt && \
-    wget http://ccb.jhu.edu/software/tophat/downloads/tophat-2.1.1.Linux_x86_64.tar.gz && \
-    tar xf tophat-2.1.1.Linux_x86_64.tar.gz && \
-    sed -i 's@/usr/bin/env python@/usr/bin/python2@' tophat-2.1.1.Linux_x86_64/tophat && \
-    ln -s $PWD/tophat-2.1.1.Linux_x86_64/tophat2 /usr/local/bin/ && \
-    rm tophat-2.1.1.Linux_x86_64.tar.gz && \
-    fix-permissions /opt/fastcq /usr/local/bin
-
 # samtools: htbioinformatics, http://www.htslib.org/download/
 # pysam:    same --^
 # macs2:    "
 RUN \
     mkdir /opt/samtools && \
     cd /opt/samtools && \
-    wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 && \
-    tar xf samtools-1.9.tar.bz2 && \
-    cd samtools-1.9 && \
+    wget https://github.com/samtools/samtools/releases/download/1.22.1/samtools-1.22.1.tar.bz2 && \
+    tar xf samtools-1.22.1.tar.bz2 && \
+    cd samtools-1.22.1 && \
     ./configure --prefix=/opt/samtools/install/ --bindir=/usr/local/bin/ && \
     make && \
     make install && \
@@ -322,11 +299,12 @@ RUN \
 # plink: ELEC-A8720 - Biologisten ilmiöiden mittaaminen
 #                     (Quantifying/measuring biological phenomena).
 # RT#18146
+# https://www.cog-genomics.org/plink/
 RUN \
     mkdir /opt/plink && \
     cd /opt/plink && \
-    wget http://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20190304.zip && \
-    unzip plink_linux_x86_64_20190304.zip && \
+    wget https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20250806.zip && \
+    unzip plink_linux_x86_64_20250806.zip && \
     ln -s $PWD/plink /usr/local/bin/ && \
     fix-permissions /opt/plink /usr/local/bin
 
@@ -350,8 +328,9 @@ EOF
 # quarto-cli, a command line tool. Used as-is plus as a dependency for the R
 # package of the same name
 
-ARG QUARTO_HASH=667ea45f963949f8c13b75c63dd30734b7f5f0ec49fd5991c5824a753066fcdd
-ARG QUARTO_VERSION=1.3.450
+# https://quarto.org/docs/get-started/
+ARG QUARTO_HASH=b047db27a55eb353b377bb0b205bdf2fa155f2be5f1467b5c015453718ffc6df
+ARG QUARTO_VERSION=1.7.33
 RUN \
     cd /tmp && \
     wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb && \
@@ -359,6 +338,47 @@ RUN \
     dpkg -i quarto-${QUARTO_VERSION}-linux-amd64.deb && \
     rm quarto-${QUARTO_VERSION}-linux-amd64.deb && \
     quarto install tinytex && \
+    clean-layer.sh
+
+# ====================================
+
+# Set default R compiler to clang to save memory.
+RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
+    echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
+    sed -i  -e "s/= gcc/= clang -flto=thin/g"  -e "s/= g++/= clang++/g"  /usr/lib/R/etc/Makeconf
+
+ENV CC=clang CXX=clang++
+
+# needed by markmyassignment
+ENV BINPREF=PATH
+
+# ====================================
+
+# TODO: remove when base updates
+RUN \
+    rm /usr/local/bin/before-notebook-root.d/allow-client-build.sh
+
+# TODO: remove when updating base
+# Fixes https://github.com/jupyter/nbgrader/issues/1870
+RUN \
+    # Use the full path to pip to be more explicit about which environment
+    # we're installing to
+    /opt/conda/bin/pip uninstall nbgrader -y && \
+    /opt/conda/bin/pip install --no-cache-dir \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
+    clean-layer.sh
+
+# ====================================
+
+RUN \
+    /opt/conda/bin/pip install \
+        # make sure that we're not accidentally upgrading jupyterlab, change when base updates
+        jupyterlab==3.6.5 \
+        # terminals requires >=v2
+        'jupyter-server>2' \
+        # older voila is incompatible with jupyter-server>=2
+        'voila>0.5' \
+        jupyter_server_terminals && \
     clean-layer.sh
 
 # ====================================
@@ -383,43 +403,6 @@ RUN \
 #           && \
 #     fix-permissions /usr/local/lib/R/site-library && \
 #     clean-layer.sh
-
-# ====================================
-
-# Set default R compiler to clang to save memory.
-RUN echo "CC=clang"     >> /usr/lib/R/etc/Makevars && \
-    echo "CXX=clang++"  >> /usr/lib/R/etc/Makevars && \
-    sed -i  -e "s/= gcc/= clang -flto=thin/g"  -e "s/= g++/= clang++/g"  /usr/lib/R/etc/Makeconf
-
-ENV CC=clang CXX=clang++
-ENV BINPREF=PATH
-
-# TODO: remove when base updates
-RUN \
-    rm /usr/local/bin/before-notebook-root.d/allow-client-build.sh
-
-# TODO: remove when updating base
-# Fixes https://github.com/jupyter/nbgrader/issues/1870
-RUN \
-    # Use the full path to pip to be more explicit about which environment
-    # we're installing to
-    /opt/conda/bin/pip uninstall nbgrader -y && \
-    /opt/conda/bin/pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
-    clean-layer.sh
-
-# ========================================
-
-RUN \
-    /opt/conda/bin/pip install \
-        # make sure that we're not accidentally upgrading jupyterlab, change when base updates
-        jupyterlab==3.6.5 \
-        # terminals requires >=v2
-        'jupyter-server>2' \
-        # older voila is incompatible with jupyter-server>=2
-        'voila>0.5' \
-        jupyter_server_terminals && \
-    clean-layer.sh
 
 # ====================================
 
