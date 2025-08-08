@@ -55,7 +55,7 @@ DOCKERCONFIG=~/git/jupyter/secrets/dockerconfig-jupyter
 # The entry to read from the dockerconfig file
 AUTH_REGISTRY=harbor.cs.aalto.fi
 # Kubernetes nodes to pull the image to
-KNODES=k8s-node{3,4,5,7,8,10,12,13,20,21,22,23}.cs.aalto.fi
+KNODES=k8s-node{15,16,17,18,19,22,23,30,31,32,33}.cs.aalto.fi
 SSH_USER=root
 # Running using bash because of the brace expansion
 $(eval KNODES := $(shell bash -c "echo ${KNODES}"))
