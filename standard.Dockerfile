@@ -249,6 +249,14 @@ RUN \
         && \
     clean-layer.sh
 
+# dsfbii2025, RT#29893
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        shap \
+        lime \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,
