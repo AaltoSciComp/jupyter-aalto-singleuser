@@ -5,10 +5,10 @@ USER root
 
 ENV JULIA_DEPOT_PATH=/opt/julia
 ENV JULIA_PKGDIR=/opt/julia
-ENV JULIA_VERSION=1.11.2
-ENV JULIA_HASH=8a372ad262d4d4d55a1044f4fe3bce7c9a4a3ce8c513d2470e58e8071eecd476
+ENV JULIA_VERSION=1.12.2
+ENV JULIA_HASH=a6d0c39ea57303ebcffa7a8d453429b86eb271e150c7cb0f5958fe65909b493a
 
-# https://julialang.org/downloads/
+# https://julialang.org/downloads/manual-downloads/
 # wget -O- https://julialang-s3.julialang.org/bin/linux/x64/1.8/julia-1.8.4-linux-x86_64.tar.gz | sha256sum -
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \
