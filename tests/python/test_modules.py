@@ -89,3 +89,11 @@ def test_modules():
     # deeplearn2024
     import transformers
     assert version.parse(transformers.__version__) >= version.parse("4.46.0")
+
+    # deeplearn2026, RT#30759
+    import transformers
+    import sentence_transformers
+    import torch
+
+    assert version.parse(transformers.__version__) >= version.parse("4.57.3")
+    assert version.parse(torch.__version__) >= version.parse("2.9.1")
