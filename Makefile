@@ -311,6 +311,13 @@ run-standard:
 		-e AALTO_NB_ENABLE_FORMGRADER=yes \
 		${REGISTRY}${GROUP}/notebook-server:${VER_STD}
 
+run-standard-bash:
+	docker run \
+		-it --rm \
+		--user 0 \
+		--entrypoint bash \
+		${REGISTRY}${GROUP}/notebook-server:${VER_STD}
+
 # Aborts the process if necessary environment variables are not set
 # https://stackoverflow.com/a/4731504/3005969
 check-khost:
