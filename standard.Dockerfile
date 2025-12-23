@@ -4,6 +4,8 @@ FROM ${BASE_IMAGE}
 USER root
 
 # Create software environment.
+# NOTE: When updating environment file, manually remove the line containing
+# "_x86_64-microarch-level=4" which causes issues when building outside of worker.
 COPY --chmod=644 environment.yml /opt/environment.yml
 RUN \
     /opt/conda/bin/conda config --system --set channel_priority flexible && \
