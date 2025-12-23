@@ -99,7 +99,8 @@ RUN \
     RUN \
     /opt/software/bin/pip install --no-cache-dir \
         # mlca2024, RT#25045
-        fusets \
+        # Installation fails because doesn't find numpy somehow, disabled
+        # fusets \
         # css2024, RT#25415
         detoxify \
         # gausproc2024, RT#25611

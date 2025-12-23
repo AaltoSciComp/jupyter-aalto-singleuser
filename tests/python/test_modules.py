@@ -19,8 +19,9 @@ def test_modules():
     assert version.parse(torch.__version__) >= version.parse('1.3.0')
     import torchvision
     assert version.parse(torchvision.__version__) >= version.parse('0.2.1')
-    import torchtext
-    assert version.parse(torchtext.__version__) >= version.parse('0.15.2')
+    # EOL since 2024-04: https://docs.pytorch.org/text/stable/index.html
+    # import torchtext
+    # assert version.parse(torchtext.__version__) >= version.parse('0.15.2')
 
     # Misc requested courses
     #import gpflow
@@ -55,13 +56,15 @@ def test_modules():
     # import cma  # removed in 2021
 
     # ai2020
-    import ortools
+    # Caused dependency conflicts, not installed
+    # import ortools
 
     # mlca2024
     import openeo
     import imgaug
     import ipyleaflet
-    import fusets
+    # Failed to install because setup.py didn't recognise numpy, disabled
+    # import fusets
     import eolearn
     # This import sometimes fails with a RecursionError related to enums,
     # disabiling for now
