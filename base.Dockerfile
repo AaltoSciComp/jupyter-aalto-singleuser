@@ -13,6 +13,9 @@ RUN sed -i 's/-exec chgrp/-exec chgrp -h/' /usr/local/bin/fix-permissions
 #
 # inkscape: for exporting notebooks containing SVGs using nbconvert
 #
+
+RUN echo cache 2025-12
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
@@ -149,7 +152,7 @@ RUN \
         patch -p0 -u < $patch; \
     done
 
-    # Save version information within the image
+# Save version information within the image
 ARG IMAGE_VERSION
 ARG UPSTREAM_MINIMAL_NOTEBOOK_VER
 ARG GIT_DESCRIBE
