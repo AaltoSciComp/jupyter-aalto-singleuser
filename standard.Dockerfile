@@ -125,7 +125,10 @@ RUN \
     cd / && \
     for patch in /tmp/patches/*.diff; do \
         echo $patch && \
-        patch -p0 -u < $patch; \
+        output=$(patch --reject-file=- --forward -p0 -u < $patch) || ret=$? \
+        # If the patch fails, check if it has been applied previously (in base
+        # image), otherqise exit with the error code
+        echo $output | grep "previously applied" || exit $ret ; \
     done
 
 # Save version information within the image
