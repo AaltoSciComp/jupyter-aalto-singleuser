@@ -96,25 +96,6 @@ RUN \
     /opt/conda/bin/pip uninstall jupyter_server_terminals -y && \
     clean-layer.sh
 
-    RUN \
-    /opt/software/bin/pip install --no-cache-dir \
-        # mlca2024, RT#25045
-        # Installation fails because doesn't find numpy somehow, disabled
-        # fusets \
-        # css2024, RT#25415
-        detoxify \
-        # gausproc2024, RT#25611
-        'gpflow>=2.9.0' \
-        # dhhb2024, RT#27034
-        niimpy \
-        liwc \
-        # snlp2025, RT#28201
-        stanza \
-        # snlp2025, RT#28201
-        'umap-learn' \
-        && \
-    clean-layer.sh
-
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,
