@@ -97,6 +97,7 @@ def test_modules():
     import transformers
     import sentence_transformers
     import torch
+    import torcheval
 
     assert version.parse(transformers.__version__) >= version.parse("4.57.3")
     assert version.parse(torch.__version__) >= version.parse("2.9.1")

@@ -98,6 +98,15 @@ RUN \
 
 # ========================================
 
+# deeplearn2026, RT#30759
+RUN \
+    /opt/software/bin/pip install --no-cache-dir \
+        torcheval \
+        && \
+    clean-layer.sh
+
+# ========================================
+
 # Duplicate of base, but hooks and patches can update frequently and are small,
 # so they're applied again here.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
