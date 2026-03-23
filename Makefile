@@ -30,15 +30,6 @@ VER_R_CACHE=6.3.26
 VER_CV=6.3.16
 VER_CV_CACHE=6.3.16
 
-# Software for the standard image
-BUILD_PATH=/m/scicomp/software/anaconda-ci/aalto-jupyter-anaconda
-ENVIRONMENT_NAME=jupyter-generic
-ENVIRONMENT_VERSION=2023-11-23
-# Built from https://github.com/AaltoSciComp/science-build-configs/commit/9ac9b9cdb3e08e0d71d06c1a67cb5ffab67879cd
-ENVIRONMENT_HASH=8d4f3f89
-
-ENVIRONMENT_FILE=$(BUILD_PATH)/software/$(ENVIRONMENT_NAME)/$(ENVIRONMENT_VERSION)/$(ENVIRONMENT_HASH)/environment.yml
-
 TEST_MEM_LIMIT="--memory=2G"
 R_INSTALL_JOB_COUNT=10
 
@@ -170,9 +161,6 @@ opencv: pre-build container-builder
 		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:opencv-$(VER_CV_CACHE)
 	#docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda env export -n base > environment-yml/$@-$(VER_CV).yml
 	#docker run --rm $(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) conda list --revisions > conda-history/$@-$(VER_CV).yml
-
-update-environment:
-	cp $(ENVIRONMENT_FILE) environment.yml
 
 
 pre-test:
