@@ -259,6 +259,19 @@ RUN \
 
 # ========================================
 
+# TODO: Remove when rebuilding with base v6.8
+RUN \
+    /opt/conda/bin/mamba install -p /opt/conda -y \
+        'voila<0.5.0' \
+        'jupyterlab-git<0.50.0' \
+        'nbdime<4' \
+        # provides jupyter-matplotlib labextension
+        ipympl \
+        && \
+    clean-layer.sh
+
+# ========================================
+
 # Duplicate of base, but hooks and patches can update frequently and are small,
 # so they're applied again here.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
