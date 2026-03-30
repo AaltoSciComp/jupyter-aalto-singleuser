@@ -228,7 +228,7 @@ RUN \
     # we're installing to
     /opt/conda/bin/pip uninstall nbgrader -y && \
     /opt/conda/bin/pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4+aalto5 && \
     clean-layer.sh
 
 # ========================================
