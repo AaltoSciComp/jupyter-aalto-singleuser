@@ -169,6 +169,17 @@ pre-test:
 # rsync follows umask, even when explicitly setting permissions
 	chmod -R o=rX $(TEST_DIR)
 
+test-base: pre-test
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server-base:$(VER_BASE) \
+		/opt/conda/bin/pytest \
+			-o cache_dir=/tmp/pytestcache \
+			/tests/base/${TESTFILE} \
+			${TESTARGS}
+	rm -r $(TEST_DIR)
+
 test-standard-conda: pre-test
 	docker run \
 		--volume=$(TEST_DIR):/tests:ro \
@@ -176,6 +187,7 @@ test-standard-conda: pre-test
 		${REGISTRY}${GROUP}/notebook-server:$(VER_STD) \
 		/opt/conda/bin/pytest \
 			-o cache_dir=/tmp/pytestcache \
+			/tests/base/${TESTFILE} \
 			/tests/python_conda/${TESTFILE} \
 			${TESTARGS}
 	rm -r $(TEST_DIR)
@@ -305,6 +317,13 @@ run-standard-bash:
 		--user 0 \
 		--entrypoint bash \
 		${REGISTRY}${GROUP}/notebook-server:${VER_STD}
+
+run-base-bash:
+	docker run \
+		-it --rm \
+		--user 0 \
+		--entrypoint bash \
+		${REGISTRY}${GROUP}/notebook-server-base:${VER_BASE}
 
 # Aborts the process if necessary environment variables are not set
 # https://stackoverflow.com/a/4731504/3005969
