@@ -76,7 +76,8 @@ RUN \
         nbval \
         pipdeptree \
         pytest \
-        voila \
+        # TODO: remove version pin when upgrading to jupyterlab 4
+        'voila<0.5.0' \
         && \
     # jupyter contrib nbextension install --sys-prefix && \
     python -m bash_kernel.install --sys-prefix && \
@@ -86,24 +87,25 @@ RUN \
 
 RUN \
     mamba install -y \
-        jupyterlab-git \
-        nbdime \
+        # TODO: remove version pin when upgrading to jupyterlab 4
+        'jupyterlab-git<0.50.0' \
+        # nbdime>=4 requires jupyterlab 4
+        # TODO: remove version pin when upgrading to jupyterlab 4
+        'nbdime<4' \
         nbgitpuller \
         nbstripout \
+        # provides jupyter-matplotlib labextension
+        ipympl \
         && \
     pip install --no-cache-dir \
         envkernel \
         && \
-    jupyter labextension install \
-        @jupyter-widgets/jupyterlab-manager \
-        @jupyterlab/git \
+    # jupyter labextension install \
         # Incompatible with jupyterlab 3.*
         # @fissio/hub-top-buttons \
-        nbdime-jupyterlab \
         # https://github.com/lckr/jupyterlab-variableInspector/issues/232
         #@lckr/jupyterlab_variableinspector \
-        jupyter-matplotlib \
-        && \
+        # && \
     nbdime config-git --enable --system && \
     jupyter serverextension enable nbgitpuller --sys-prefix && \
     git config --system core.editor nano && \
