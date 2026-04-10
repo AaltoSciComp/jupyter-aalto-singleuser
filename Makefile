@@ -306,6 +306,7 @@ run-standard:
 		-v /l/jupyter/mount/notebooks:/notebooks \
 		-v /l/jupyter/mount/course:/course \
 		-v /l/jupyter/mount/exchange:/srv/nbgrader/exchange \
+		-v /l/jupyter/mount/exchange:/usr/local/share/nbgrader/exchange \
 		-p 127.0.0.1:8888:8888 \
 		-p 127.0.0.1:5678:5678 \
 		-e AALTO_NB_ENABLE_FORMGRADER=yes \
