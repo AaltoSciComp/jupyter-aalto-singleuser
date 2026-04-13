@@ -272,6 +272,16 @@ RUN \
 
 # ========================================
 
+RUN \
+    # Use the full path to pip to be more explicit about which environment
+    # we're installing to
+    /opt/conda/bin/pip uninstall nbgrader -y && \
+    /opt/conda/bin/pip install --no-cache-dir \
+        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4+aalto7 && \
+    clean-layer.sh
+
+# ========================================
+
 # Duplicate of base, but hooks and patches can update frequently and are small,
 # so they're applied again here.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
