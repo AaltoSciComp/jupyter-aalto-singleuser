@@ -285,35 +285,35 @@ pull-opencv:
 
 run-base:
 	@$(MAKE) --no-print-directory run-generic \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE) ARGS="$(ARGS)"
 run-standard:
 	@$(MAKE) --no-print-directory run-generic \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) ARGS="$(ARGS)"
 run-r-ubuntu:
 	@$(MAKE) --no-print-directory run-generic \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) ARGS="$(ARGS)"
 run-julia:
 	@$(MAKE) --no-print-directory run-generic \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA) ARGS="$(ARGS)"
 run-opencv:
 	@$(MAKE) --no-print-directory run-generic \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) ARGS="$(ARGS)"
 
 run-base-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE) ARGS="$(ARGS)"
 run-standard-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) ARGS="$(ARGS)"
 run-r-ubuntu-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) ARGS="$(ARGS)"
 run-julia-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA) ARGS="$(ARGS)"
 run-opencv-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
-	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV)
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV) ARGS="$(ARGS)"
 
 # Not meant to be called directly in most cases
 pull-generic: check-image
@@ -339,7 +339,7 @@ run-generic:
 		-p 127.0.0.1:8888:8888 \
 		-p 127.0.0.1:5678:5678 \
 		-e AALTO_NB_ENABLE_FORMGRADER=yes \
-		$(IMAGE)
+		$(IMAGE) $(ARGS)
 
 # Not meant to be called directly in most cases
 run-generic-bash:
@@ -347,7 +347,7 @@ run-generic-bash:
 		-it --rm \
 		--user 0 \
 		--entrypoint bash \
-		$(IMAGE)
+		$(IMAGE) $(ARGS)
 
 
 # Clean up disk space
