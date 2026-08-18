@@ -266,6 +266,10 @@ push-devhub-base: check-khost check-hubrepo
 	docker push ${HUBREPO}/notebook-server-base:${VER_BASE}
 	ssh ${KHOST} ssh k8s-node4.cs.aalto.fi "docker pull ${HUBREPO}/notebook-server-base:${VER_BASE}"
 
+
+pull-base:
+	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
 pull-standard:
 	@$(MAKE) --no-print-directory pull-generic \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
@@ -277,6 +281,38 @@ pull-julia:
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA)
 pull-opencv:
 	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV)
+
+run-base:
+	@$(MAKE) --no-print-directory run-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
+run-standard:
+	@$(MAKE) --no-print-directory run-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
+run-r-ubuntu:
+	@$(MAKE) --no-print-directory run-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R)
+run-julia:
+	@$(MAKE) --no-print-directory run-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA)
+run-opencv:
+	@$(MAKE) --no-print-directory run-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV)
+
+run-base-bash:
+	@$(MAKE) --no-print-directory run-generic-bash \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
+run-standard-bash:
+	@$(MAKE) --no-print-directory run-generic-bash \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
+run-r-ubuntu-bash:
+	@$(MAKE) --no-print-directory run-generic-bash \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R)
+run-julia-bash:
+	@$(MAKE) --no-print-directory run-generic-bash \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-julia:$(VER_JULIA)
+run-opencv-bash:
+	@$(MAKE) --no-print-directory run-generic-bash \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-opencv:$(VER_CV)
 
 # Not meant to be called directly in most cases
@@ -291,15 +327,8 @@ pull-generic: check-image
 			--timeout 0 \
 			"ctr -n k8s.io images pull --user \"\$$(cat -)\" ${IMAGE}"
 
-
-# Clean up disk space
-prune-images: check-khost check-knodes
-#	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker rmi ${REGISTRY}${GROUP}/notebook-server:0.5.{0,1,2,3,4,5,6,7}'
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker image prune -f'
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker container prune -f'
-	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker images' | cut '-d:' '-f2-' | sort
-
-run-standard:
+# Not meant to be called directly in most cases
+run-generic:
 	docker run \
 		-it --rm \
 		--user 0 \
@@ -310,21 +339,23 @@ run-standard:
 		-p 127.0.0.1:8888:8888 \
 		-p 127.0.0.1:5678:5678 \
 		-e AALTO_NB_ENABLE_FORMGRADER=yes \
-		${REGISTRY}${GROUP}/notebook-server:${VER_STD}
+		$(IMAGE)
 
-run-standard-bash:
+# Not meant to be called directly in most cases
+run-generic-bash:
 	docker run \
 		-it --rm \
 		--user 0 \
 		--entrypoint bash \
-		${REGISTRY}${GROUP}/notebook-server:${VER_STD}
+		$(IMAGE)
 
-run-base-bash:
-	docker run \
-		-it --rm \
-		--user 0 \
-		--entrypoint bash \
-		${REGISTRY}${GROUP}/notebook-server-base:${VER_BASE}
+
+# Clean up disk space
+prune-images: check-khost check-knodes
+#	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker rmi ${REGISTRY}${GROUP}/notebook-server:0.5.{0,1,2,3,4,5,6,7}'
+	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker image prune -f'
+	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker container prune -f'
+	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker images' | cut '-d:' '-f2-' | sort
 
 # Aborts the process if necessary environment variables are not set
 # https://stackoverflow.com/a/4731504/3005969
