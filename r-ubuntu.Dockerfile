@@ -3,13 +3,17 @@ FROM ${BASE_IMAGE}
 
 USER root
 
-RUN echo Clear build cache 2025-08
+RUN echo Clear build cache 2026-08-25
+
+# Removing conda from PATH to avoid R from linking against the libraries in the conda env
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
          -O /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
     echo "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" \
         > /etc/apt/sources.list.d/cran.list && \
     apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         clang \
         ed \
@@ -45,6 +49,8 @@ RUN wget -q https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
         libudunits2-dev \
         # s2 dependency
         libgdal-dev \
+        # contains needed omp.h
+        libomp-dev \
           && \
     update-alternatives --set cc  /usr/bin/clang && \
     update-alternatives --set c++ /usr/bin/clang++ && \
@@ -73,9 +79,7 @@ RUN \
         digest \
           && \
     fix-permissions /usr/local/lib/R/site-library && \
-    clean-layer.sh && \
-    Rscript -e 'IRkernel::installspec(user = FALSE)'
-RUN jupyter kernelspec remove -f python3
+    clean-layer.sh
 
 # Packages from jupyter r-notebook
 RUN \
@@ -98,11 +102,8 @@ RUN \
         htmlwidgets \
         hexbin \
         caTools \
+        BiocManager \
           && \
-    fix-permissions /usr/local/lib/R/site-library && \
-    clean-layer.sh
-
-RUN Rscript -e 'install.packages("BiocManager")' && \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
 
@@ -195,7 +196,7 @@ RUN \
 
 # Packages from Stan
 RUN \
-    install-r-packages.sh --url 'https://mc-stan.org/r-packages/' \
+    install-r-packages.sh --url 'https://stan-dev.r-universe.dev' \
         # bayesian data analysis, RT#21752
         cmdstanr \
           && \
@@ -203,6 +204,12 @@ RUN \
     clean-layer.sh
 
 # ====================================
+
+RUN \
+    # installspec needs to find `jupyter` in PATH
+    PATH=/opt/conda/bin:${PATH} \
+    Rscript -e 'IRkernel::installspec(user = FALSE)' && \
+    /opt/conda/bin/jupyter kernelspec remove -f python3
 
 # Try to disable Python kernel
 # https://github.com/jupyter/jupyter_client/issues/144
@@ -230,29 +237,34 @@ RUN apt-get update && \
         && \
     clean-layer.sh
 
-ENV RSTUDIO_PKG=rstudio-server-2025.05.1-513-amd64.deb
-ENV RSTUDIO_CHECKSUM=8e49ca68d154d5d17ae5fcc386e9c93473f9b73f6f573a1511866051e288b547
+ENV RSTUDIO_PKG=rstudio-server-2026.08.1-195-amd64.deb
+ENV RSTUDIO_CHECKSUM=ccaa681e792a03652755b2b14ccde9e0b2ffcaf99b05b3775df5c5c4a9b5c9eb
 # Download url: https://www.rstudio.com/products/rstudio/download-server/
 RUN wget -q https://download2.rstudio.org/server/$(lsb_release -sc)/amd64/${RSTUDIO_PKG} && \
     test "$(sha256sum < ${RSTUDIO_PKG})" = "${RSTUDIO_CHECKSUM}  -" && \
     dpkg -i ${RSTUDIO_PKG} && \
     rm ${RSTUDIO_PKG}
 
+# R packages are installed, adding conda back to PATH
+
+ENV PATH=/opt/conda/condabin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV CONDA_DIR=/opt/conda
+
 # Rstudio for jupyterlab
 # https://github.com/jupyterhub/jupyter-rsession-proxy
-RUN pip install --no-cache-dir jupyter-rsession-proxy && \
-    jupyter labextension install @techrah/text-shortcuts && \
+RUN /opt/conda/bin/pip install --no-cache-dir jupyter-rsession-proxy && \
+    /opt/conda/bin/jupyter labextension install @techrah/text-shortcuts && \
     fix-permissions /usr/local/lib/R/site-library && \
     clean-layer.sh
 
 RUN \
-    pip install --upgrade --no-cache-dir \
+    /opt/conda/bin/pip install --upgrade --no-cache-dir \
         # upgrading because htseq complains about invalid numpy version, and
         # current scipy version is incompatible with newer numpy
         numpy \
         scipy \
         && \
-    pip install --no-cache-dir \
+    /opt/conda/bin/pip install --no-cache-dir \
         # htbioinformatics, RT#15527
         htseq \
         && \
@@ -273,7 +285,7 @@ RUN cd /opt && \
 # http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#obtaining-bowtie-2
 RUN conda config --append channels bioconda && \
     conda config --system --set channel_priority flexible && \
-    conda install \
+    /opt/conda/bin/mamba install -p /opt/conda \
         bowtie2 \
         && \
     clean-layer.sh
@@ -290,7 +302,7 @@ RUN \
     ./configure --prefix=/opt/samtools/install/ --bindir=/usr/local/bin/ && \
     make && \
     make install && \
-    pip install --no-cache-dir \
+    /opt/conda/bin/pip install --no-cache-dir \
         pysam \
         macs2 \
         && \
@@ -354,26 +366,10 @@ ENV BINPREF=PATH
 
 # ====================================
 
-# TODO: remove when base updates
-RUN \
-    rm /usr/local/bin/before-notebook-root.d/allow-client-build.sh
-
-# TODO: remove when updating base
-# Fixes https://github.com/jupyter/nbgrader/issues/1870
-RUN \
-    # Use the full path to pip to be more explicit about which environment
-    # we're installing to
-    /opt/conda/bin/pip uninstall nbgrader -y && \
-    /opt/conda/bin/pip install --no-cache-dir \
-        git+https://github.com/AaltoSciComp/nbgrader@v0.8.4.dev505 && \
-    clean-layer.sh
-
-# ====================================
-
 RUN \
     /opt/conda/bin/pip install \
         # make sure that we're not accidentally upgrading jupyterlab, change when base updates
-        jupyterlab==3.6.5 \
+        jupyterlab==3.6.8 \
         # terminals requires >=v2
         'jupyter-server>2' \
         # older voila is incompatible with jupyter-server>=2
