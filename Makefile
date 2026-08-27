@@ -18,6 +18,12 @@ VER_STD_BASE=6.7
 # See the comment for VER_BASE_CACHE
 VER_STD_CACHE=6.7.4
 
+# RL course
+VER_RL=6.8.1
+VER_RL_BASE=6.8
+# See the comment for VER_BASE_CACHE
+VER_RL_CACHE=6.8.0
+
 # Julia
 VER_JULIA=6.6.3
 VER_JULIA_BASE=6.6
@@ -114,6 +120,20 @@ standard: pre-build container-builder
 #	docker run --rm ${REGISTRY}${GROUP}/notebook-server:$(VER_STD) conda list --revisions > conda-history/$@-$(VER_STD).yml
 #r:
 #	DOCKER_BUILDKIT=1 docker build -t ${REGISTRY}${GROUP}/notebook-server-r:0.4.0 --pull=false . -f r.Dockerfile
+rl-course: pre-build container-builder
+	@! grep -P '\t' -C 1 rl-course.Dockerfile || { echo "ERROR: Tabs in rl-course.Dockerfile" ; exit 1 ; }
+	docker buildx build . \
+		-t $(REGISTRY)$(GROUP)/notebook-server-rl-course:$(VER_RL) \
+		-f rl-course.Dockerfile \
+		--builder=jupyter \
+		--load \
+		--build-arg=BASE_IMAGE=$(BASE_REG_GROUP)/notebook-server-base:$(VER_RL_BASE) \
+		--build-arg=JUPYTER_SOFTWARE_IMAGE=$(ENVIRONMENT_NAME)_$(ENVIRONMENT_VERSION)_$(ENVIRONMENT_HASH) \
+		--build-arg=IMAGE_VERSION=$(REGISTRY)$(GROUP)/notebook-server-rl-course:$(VER_RL) \
+		--build-arg=GIT_DESCRIBE=$(GIT_DESCRIBE) \
+		--cache-to type=registry,ref=aaltoscienceit/notebook-server-cache:rl-course-$(VER_RL) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:rl-course-$(VER_RL) \
+		--cache-from type=registry,ref=aaltoscienceit/notebook-server-cache:rl-course-$(VER_RL_CACHE)
 r-ubuntu: pre-build container-builder
 	@! grep -P '\t' -C 1 r-ubuntu.Dockerfile || { echo "ERROR: Tabs in r-ubuntu.Dockerfile" ; exit 1 ; }
 	docker buildx build . \
@@ -202,6 +222,16 @@ test-standard: pre-test
 			/tests/python/${TESTFILE} \
 			${TESTARGS}
 	rm -r $(TEST_DIR)
+test-rl-course: pre-test
+	docker run \
+		--volume=$(TEST_DIR):/tests:ro \
+		${TEST_MEM_LIMIT} \
+		${REGISTRY}${GROUP}/notebook-server-rl-course:$(VER_RL) \
+		/opt/environments/elec-e8125-rl2026/.venv/bin/pytest \
+			-o cache_dir=/tmp/pytestcache \
+			/tests/python/courses/test_rl2026.py \
+			${TESTARGS}
+	rm -r $(TEST_DIR)
 #	CC="clang" CXX="clang++" jupyter nbconvert --exec --ExecutePreprocessor.timeout=300 pystan_demo.ipynb --stdout
 test-standard-full: test-standard pre-test
 	docker run \
@@ -248,6 +278,8 @@ push-base:
 	docker push $(REGISTRY)$(GROUP)/notebook-server-base:$(VER_BASE)
 push-standard:
 	docker push ${REGISTRY}${GROUP}/notebook-server:$(VER_STD)
+push-rl-course:
+	docker push ${REGISTRY}${GROUP}/notebook-server-rl-course:$(VER_RL)
 push-r-ubuntu:
 	docker push ${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R)
 push-julia:
@@ -273,6 +305,9 @@ pull-base:
 pull-standard:
 	@$(MAKE) --no-print-directory pull-generic \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD)
+pull-rl-course:
+	@$(MAKE) --no-print-directory pull-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-rl-course:$(VER_RL)
 pull-r-ubuntu:
 	@$(MAKE) --no-print-directory pull-generic \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R)
@@ -289,6 +324,9 @@ run-base:
 run-standard:
 	@$(MAKE) --no-print-directory run-generic \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) ARGS="$(ARGS)"
+run-rl-course:
+	@$(MAKE) --no-print-directory run-generic \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-rl-course:$(VER_RL) ARGS="$(ARGS)"
 run-r-ubuntu:
 	@$(MAKE) --no-print-directory run-generic \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) ARGS="$(ARGS)"
@@ -305,6 +343,9 @@ run-base-bash:
 run-standard-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server:$(VER_STD) ARGS="$(ARGS)"
+run-rl-course-bash:
+	@$(MAKE) --no-print-directory run-generic-bash \
+	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-rl-course:$(VER_RL) ARGS="$(ARGS)"
 run-r-ubuntu-bash:
 	@$(MAKE) --no-print-directory run-generic-bash \
 	IMAGE=$(REGISTRY)$(GROUP)/notebook-server-r-ubuntu:$(VER_R) ARGS="$(ARGS)"
@@ -385,8 +426,8 @@ endif
 pre-build:
 	mkdir -p conda-history environment-yml
 	chmod 600 environment.yml
-	find hooks scripts -type f -exec chmod 600 {} \;
-	find hooks scripts -type d -exec chmod 700 {} \;
+	find hooks scripts environments -type f -exec chmod 600 {} \;
+	find hooks scripts environments -type d -exec chmod 700 {} \;
 
 container-builder:
 	if ! docker buildx inspect jupyter > /dev/null 2>&1; then \

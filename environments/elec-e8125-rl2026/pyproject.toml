@@ -1,0 +1,43 @@
+[project]
+name = "elec-e8125-rl2026"
+version = "2026.0.0"
+description = "ELEC-E8125 Reinforcement Learning 2026 - course environment"
+requires-python = ">=3.12,<3.13"  # 3.13: labmaze (via dm-control) has no wheel
+
+dependencies = [
+    "gymnasium[classic-control,box2d,mujoco]>=1.2,<2",
+    "torch==2.9.1+cpu",
+    "numpy>=2.1,<3",
+
+    "matplotlib>=3.9",
+    "pandas>=2.2,<3",
+    "seaborn>=0.13",
+    "scipy>=1.14",
+    "scikit-learn>=1.5",
+    "pyyaml>=6.0",
+
+    "moviepy>=2.1,<3",  # required by gymnasium RecordVideo
+    "imageio>=2.34,<3",
+    "imageio-ffmpeg>=0.5",
+    "pillow>=10",
+    # project/sanding.py imports pygame. Name the pygame-ce fork, not pygame.
+    # gymnasium installs pygame-ce, and it gives the pygame module name.
+    "pygame-ce>=2.1.3,<3",
+
+    "jupyterlab>=4.2",
+    "ipykernel>=6",
+    "ipython>=8",
+    "ipywidgets>=8.1,<9",
+
+    "pytest >=9.1.1,<10.0.0",
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
