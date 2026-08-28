@@ -413,11 +413,6 @@ RUN \
     clean-layer.sh
 
 # bayesda2023, RT#24186
-ENV CMDSTAN=/coursedata/cmdstan
-RUN \
-    echo "CMDSTAN=${CMDSTAN}" >> /home/${NB_USER}/.Renviron && \
-    fix-permissions /home/${NB_USER}
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libtbb2 \
           && \
@@ -427,6 +422,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN \
     Rscript -e 'remotes::install_github("paul-buerkner/brms")' && \
     clean-layer.sh
+
+# bayesda2026, RT#32730
+RUN \
+    mkdir -p /opt/cmdstan && \
+    Rscript -e "library(cmdstanr); install_cmdstan(cores = 4, dir = '/opt/cmdstan')" && \
+    echo "CMDSTAN=/opt/cmdstan" >> /home/${NB_USER}/.Renviron && \
+    fix-permissions /opt/cmdstan && \
+    clean-layer.sh
+
+# This needs to be set after the installation is done, otherwise importing
+# cmdstanr will fail
+ENV CMDSTAN=/opt/cmdstan
 
 # ====================================
 
