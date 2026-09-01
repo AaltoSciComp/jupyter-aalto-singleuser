@@ -424,6 +424,7 @@ RUN \
     clean-layer.sh
 
 # bayesda2026, RT#32730
+# https://mc-stan.org/cmdstanr/articles/cmdstanr.html#installing-cmdstan
 RUN \
     mkdir -p /opt/cmdstan && \
     Rscript -e "library(cmdstanr); install_cmdstan(cores = 4, dir = '/opt/cmdstan')" && \
