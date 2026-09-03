@@ -94,6 +94,19 @@ RUN \
 #         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4+aalto7 && \
 #     clean-layer.sh
 
+# Dependencies for mujoco, see
+# https://docs.pytorch.org/rl/0.4/reference/generated/knowledge_base/MUJOCO_INSTALLATION.html#prerequisite-for-rendering-all-mujoco-versions
+RUN \
+    apt-get update && apt-get install -y --no-install-recommends \
+        libglfw3 \
+        libglew2.2 \
+        libgl1-mesa-glx \
+        libosmesa6 \
+        # not mentioned in the docs, but seems to be required
+        libegl1 \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,
