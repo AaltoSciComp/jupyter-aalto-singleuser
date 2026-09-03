@@ -61,3 +61,9 @@ def test_rl2026():
 
     if issues:
         raise AssertionError("\n".join(issues))
+
+
+def test_mujoco():
+    from mujoco.egl import GLContext
+    ctx = GLContext(100,  100)
+    print(ctx)
