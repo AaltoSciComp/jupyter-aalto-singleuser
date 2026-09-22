@@ -402,6 +402,32 @@ RUN \
 
 # ====================================
 
+# bayesda2023, RT#24186
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libtbb2 \
+          && \
+    clean-layer.sh
+
+# bayesda2024, RT#27272, RT#27349
+RUN \
+    Rscript -e 'remotes::install_github("paul-buerkner/brms")' && \
+    clean-layer.sh
+
+# bayesda2026, RT#32730
+# https://mc-stan.org/cmdstanr/articles/cmdstanr.html#installing-cmdstan
+RUN \
+    mkdir -p /opt/cmdstan && \
+    Rscript -e "library(cmdstanr); install_cmdstan(cores = 4, dir = '/opt/cmdstan')" && \
+    echo "CMDSTAN=/opt/cmdstan" >> /home/${NB_USER}/.Renviron && \
+    fix-permissions /opt/cmdstan && \
+    clean-layer.sh
+
+# This needs to be set after the installation is done, otherwise importing
+# cmdstanr will fail
+ENV CMDSTAN=/opt/cmdstan
+
+# ====================================
+
 # Duplicate of base, but hooks can update frequently and are small so
 # put them last.
 COPY --chmod=0755 hooks/ scripts/ /usr/local/bin/
