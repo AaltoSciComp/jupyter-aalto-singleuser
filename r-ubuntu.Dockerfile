@@ -426,6 +426,14 @@ RUN \
 # cmdstanr will fail
 ENV CMDSTAN=/opt/cmdstan
 
+# compgeno2026, RT#33464
+RUN \
+    install-r-packages.sh --bioconductor \
+        msa \
+          && \
+    fix-permissions /usr/local/lib/R/site-library && \
+    clean-layer.sh
+
 # ====================================
 
 # Duplicate of base, but hooks can update frequently and are small so
