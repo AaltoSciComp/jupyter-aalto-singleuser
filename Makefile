@@ -391,6 +391,26 @@ run-generic-bash:
 		$(IMAGE) $(ARGS)
 
 
+tag-base:
+	@$(MAKE) --no-print-directory tag-generic \
+	TAG_VERSION=$(VER_BASE) ARGS="$(ARGS)"
+tag-standard:
+	@$(MAKE) --no-print-directory tag-generic \
+	TAG_VERSION=:$(VER_STD) ARGS="$(ARGS)"
+tag-r-ubuntu:
+	@$(MAKE) --no-print-directory tag-generic \
+	TAG_VERSION=$(VER_R) ARGS="$(ARGS)"
+tag-julia:
+	@$(MAKE) --no-print-directory tag-generic \
+	TAG_VERSION=$(VER_JULIA) ARGS="$(ARGS)"
+tag-opencv:
+	@$(MAKE) --no-print-directory tag-generic \
+	TAG_VERSION=$(VER_CV) ARGS="$(ARGS)"
+
+# Not meant to be called directly in most cases
+tag-generic:
+	git tag -am v$(TAG_VERSION) v$(TAG_VERSION) $(ARGS)
+
 # Clean up disk space
 prune-images: check-khost check-knodes
 #	ssh ${KHOST} time pdsh -R ssh -w ${KNODES} 'docker rmi ${REGISTRY}${GROUP}/notebook-server:0.5.{0,1,2,3,4,5,6,7}'
