@@ -249,7 +249,7 @@ test-julia: pre-test
 		--volume=$(TEST_DIR):/tests:ro \
 		${TEST_MEM_LIMIT} \
 		${REGISTRY}${GROUP}/notebook-server-julia:$(VER_JULIA) \
-		bash -c 'pwd; file=${TESTFILE:-*}; [ -z "$${file}" ] && file="/tests/julia/*" || file="/tests/julia/$${file}"; echo file $${file}; for x in $${file}; do echo Running $$x; /usr/local/bin/julia $$x ${TESTARGS} || exit 1; done'
+		bash -c 'pwd; [ -z "${TESTFILE}" ] && file="/tests/julia/*" || file="/tests/julia/${TESTFILE}"; echo file $${file}; for x in $${file}; do echo Running $$x; /usr/local/bin/julia $$x ${TESTARGS} || exit 1; done'
 	rm -r $(TEST_DIR)
 
 test-r-ubuntu: pre-test
@@ -257,7 +257,7 @@ test-r-ubuntu: pre-test
 		--volume=$(TEST_DIR):/tests:ro \
 		${TEST_MEM_LIMIT} \
 		${REGISTRY}${GROUP}/notebook-server-r-ubuntu:$(VER_R) \
-		Rscript -e "source('/tests/r/test_all.r')"
+		bash -c '[ -z "${TESTFILE}" ] && file="/tests/r/test_all.r" || file="/tests/r/${TESTFILE}"; echo Running $${file}; Rscript -e "source(\"$${file}\")"'
 	rm -r $(TEST_DIR)
 
 test-opencv: pre-test
