@@ -229,7 +229,7 @@ test-rl-course: pre-test
 		${REGISTRY}${GROUP}/notebook-server-rl-course:$(VER_RL) \
 		/opt/environments/elec-e8125-rl2026/.venv/bin/pytest \
 			-o cache_dir=/tmp/pytestcache \
-			/tests/python/courses/test_rl2026.py \
+			/tests/python_rl/test_rl2026.py \
 			${TESTARGS}
 	rm -r $(TEST_DIR)
 #	CC="clang" CXX="clang++" jupyter nbconvert --exec --ExecutePreprocessor.timeout=300 pystan_demo.ipynb --stdout

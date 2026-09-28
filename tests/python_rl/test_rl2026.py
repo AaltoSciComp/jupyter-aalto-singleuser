@@ -1,3 +1,9 @@
+import pytest
+
+
+pytestmark = pytest.mark.requires_image_version("6.8.2")
+
+
 def test_rl2026():
     import importlib
     import importlib.metadata
