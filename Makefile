@@ -396,7 +396,7 @@ tag-base:
 	TAG_VERSION=$(VER_BASE) ARGS="$(ARGS)"
 tag-standard:
 	@$(MAKE) --no-print-directory tag-generic \
-	TAG_VERSION=:$(VER_STD) ARGS="$(ARGS)"
+	TAG_VERSION=$(VER_STD) ARGS="$(ARGS)"
 tag-r-ubuntu:
 	@$(MAKE) --no-print-directory tag-generic \
 	TAG_VERSION=$(VER_R) ARGS="$(ARGS)"
