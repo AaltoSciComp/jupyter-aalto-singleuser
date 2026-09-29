@@ -126,6 +126,13 @@ RUN \
         git+https://github.com/AaltoSciComp/nbgrader@v0.8.4+aalto7 && \
     clean-layer.sh
 
+# ml2026, RT#33514
+RUN \
+    /opt/software/bin/mamba install -p /opt/software -y --freeze-installed \
+        'gym==0.21.0' \
+        && \
+    clean-layer.sh
+
 # ========================================
 
 # Duplicate of base, but hooks and patches can update frequently and are small,

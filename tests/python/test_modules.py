@@ -101,3 +101,7 @@ def test_modules():
 
     assert version.parse(transformers.__version__) >= version.parse("4.57.3")
     assert version.parse(torch.__version__) >= version.parse("2.9.1")
+
+    # ml2026
+    import gym
+    assert version.parse(gym.__version__) >= version.parse("0.21.0")
